@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextInput, View, Image, Button, FlatList, Alert} from 'react-native';
 import { useState, useMemo } from 'react';
+import  styles from './Styles/styles';
 
 export default function App() {
   const [nombreP, setNombreP] = useState("");
@@ -69,19 +70,19 @@ export default function App() {
         <Text style = {styles.label}>Ingresa el nombre del pokemon</Text>
         <TextInput 
           style = {styles.input} 
-          placeholder="pikachu"
+          placeholder="Pikachu"
           value={nombreP}
           onChangeText={setNombreP}/>
          <Text styles = {styles.label}>Ingresa el tipo del pokemon</Text>
          <TextInput 
           style = {styles.input}
-          placeholder="electrico"
+          placeholder="Electrico"
           value={tipoP}
           onChangeText={setTipoP}/>
           <Text styles = {styles.label}>Ingresa la url de la imagen</Text>
           <TextInput
           style = {styles.input}
-          placeholder = "imagen.jpg"
+          placeholder = "imagen https://"
           value= {urlP}
           onChangeText={setUrlP}/>
 
