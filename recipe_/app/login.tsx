@@ -16,7 +16,7 @@ export default function Login() {
           <Text style={styles.label}>Correo</Text>
           <TextInput
             style={styles.input}
-            placeholder="Value"
+            placeholder="example@email.com"
             keyboardType="email-address"
             autoCapitalize="none"
             placeholderTextColor="#9B9B9B"
@@ -27,7 +27,7 @@ export default function Login() {
           <Text style={styles.label}>Contraseña</Text>
           <TextInput
             style={styles.input}
-            placeholder="Value"
+            placeholder="password segura"
             secureTextEntry
             placeholderTextColor="#9B9B9B"
           />

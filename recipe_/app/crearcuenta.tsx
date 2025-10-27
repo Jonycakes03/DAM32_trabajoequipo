@@ -23,7 +23,7 @@ export default function Register() {
           <Text style={styles.label}>Nombre</Text>
           <TextInput
             style={styles.input}
-            placeholder="Value"
+            placeholder="Miguel Suarez"
             placeholderTextColor="#9B9B9B"
             value={name}
             onChangeText={setName}
@@ -34,7 +34,7 @@ export default function Register() {
           <Text style={styles.label}>Fecha de nacimiento</Text>
           <TextInput
             style={styles.input}
-            placeholder="Value"
+            placeholder="DD/MM/AAAA"
             placeholderTextColor="#9B9B9B"
             value={birthdate}
             onChangeText={setBirthdate}
@@ -66,7 +66,7 @@ export default function Register() {
           <Text style={styles.label}>Correo</Text>
           <TextInput
             style={styles.input}
-            placeholder="Value"
+            placeholder="exaample@email.com"
             placeholderTextColor="#9B9B9B"
             keyboardType="email-address"
             autoCapitalize="none"
@@ -79,12 +79,23 @@ export default function Register() {
           <Text style={styles.label}>Contraseña</Text>
           <TextInput
             style={styles.input}
-            placeholder="Value"
+            placeholder="contraseña segura"
             placeholderTextColor="#9B9B9B"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
           />
+        </View>
+        
+        <View style={styles.field}>
+          <Text style={styles.label}>Confirmar Contraseña</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="confirmar contraseña"
+            placeholderTextColor="#9B9B9B"
+            secureTextEntry
+          />
+
         </View>
 
         <TouchableOpacity style={styles.button} onPress={() => {}}>
