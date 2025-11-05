@@ -70,21 +70,21 @@ export default function Home() {
           </TouchableOpacity>
         </Link>
 
-        <Link href="/search" asChild>
+        <Link href="/buscar" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="search-outline" size={24} color="#fff" />
             <Text style={styles.tabLabel}>Buscar</Text>
           </TouchableOpacity>
         </Link>
 
-        <Link href="/lists" asChild>
+        <Link href="/listas" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="heart-outline" size={24} color="#fff" />
             <Text style={styles.tabLabel}>Listas</Text>
           </TouchableOpacity>
         </Link>
 
-        <Link href="/profile" asChild>
+        <Link href="/perfil" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="person-outline" size={24} color="#fff" />
             <Text style={styles.tabLabel}>Perfil</Text>

@@ -2,7 +2,9 @@ import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
-    <Stack>
+    <Stack screenOptions={{ 
+      headerLeft: () => null, // This removes the on-screen back button
+    }} >
       <Stack.Screen 
         name="index" 
         options={{ 

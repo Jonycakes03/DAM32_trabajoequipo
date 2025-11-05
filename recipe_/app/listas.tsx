@@ -1,78 +1,37 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import { Link } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
+
+const TAUPE = "#5b524b";
 
 export default function ListsScreen() {
-  const [name, setName] = useState("Value");
-  const [items, setItems] = useState([
-    { id: "1", title: "Head & Shoulders", desc: "Descripción" },
-    { id: "2", title: "Herbal Essences", desc: "Descripción" },
-    { id: "3", title: "Old Spice", desc: "Descripción" },
-  ]);
-
-  const removeItem = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
-  const addItem = () => {
-    if (!name.trim()) return;
-    setItems(prev => [{ id: Date.now().toString(), title: name.trim(), desc: "Descripción" }, ...prev]);
-    setName("");
-  };
-
   return (
     <View style={styles.container}>
-      {}
-      <View style={styles.metaRow}>
-        <Text style={styles.metaBrand}>CLEARLABEL</Text>
-        <Ionicons name="mail-outline" size={18} color="#111" />
+      <Text style={styles.title}>Tus listas favoritas</Text>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Shampoo</Text>
+        <Text style={styles.cardDesc}>Descripción</Text>
+        <AntDesign name="close" size={18} color="#000" style={styles.cardClose} />
       </View>
 
-      {}
-      <View style={styles.headerRow}>
-        <Link href="/home" asChild>
-          <TouchableOpacity style={styles.backBtn}>
-            <Ionicons name="chevron-back" size={22} color="#111" />
-          </TouchableOpacity>
-        </Link>
-        <Text style={styles.headerTitle}>Shampoo</Text>
-        <View style={{ width: 22 }} />
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Gel</Text>
+        <Text style={styles.cardDesc}>Descripción</Text>
+        <AntDesign name="close" size={18} color="#000" style={styles.cardClose} />
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 140 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {}
-        {items.map(item => (
-          <View key={item.id} style={styles.card}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardDesc}>{item.desc}</Text>
-            </View>
-            <TouchableOpacity onPress={() => removeItem(item.id)} style={styles.closeBtn}>
-              <Ionicons name="close" size={20} color="#111" />
-            </TouchableOpacity>
-          </View>
-        ))}
+      {/* Campo para crear lista */}
+      <View style={styles.inputRow}>
+        <Text style={styles.inputLabel}>Nombre</Text>
+        <TextInput style={styles.input} placeholder="Skincare" />
+        <TouchableOpacity style={styles.createButton}>
+          <Text style={styles.createButtonText}>Crear Lista</Text>
+        </TouchableOpacity>
+      </View>
 
-        {}
-        <View style={{ marginTop: 8 }}>
-          <Text style={styles.inputLabel}>Nombre</Text>
-          <View style={styles.addRow}>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="Nombre"
-              style={styles.input}
-              placeholderTextColor="#7a7a7a"
-            />
-            <TouchableOpacity style={styles.addBtn} onPress={addItem}>
-              <Text style={styles.addText}>Agregar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
-
-      {}
+      {/* Tabbar */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -81,22 +40,22 @@ export default function ListsScreen() {
           </TouchableOpacity>
         </Link>
 
-        <Link href="/search" asChild>
+        <Link href="/buscar" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="search-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Buscar</Text>
           </TouchableOpacity>
         </Link>
 
-        <Link href="/lists" asChild>
+        <Link href="/listas" asChild>
           <TouchableOpacity style={styles.tabItem}>
-            {/* Corazón RELLENO para indicar tab activo */}
-            <Ionicons name="heart" size={22} color="#fff" />
-            <Text style={styles.tabLabel}>Listas</Text>
+            {/* Corazón relleno porque estamos en esta pantalla */}
+            <AntDesign name="heart" size={22} color="#fff" />
+            <Text style={[styles.tabLabel, { fontWeight: "700" }]}>Listas</Text>
           </TouchableOpacity>
         </Link>
 
-        <Link href="/profile" asChild>
+        <Link href="/perfil" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="person-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Perfil</Text>
@@ -107,118 +66,73 @@ export default function ListsScreen() {
   );
 }
 
-const TAUPE = "#5b524b";
-const LIGHT_CARD = "#F0EFEF";
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-
-  metaRow: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  metaBrand: {
-    fontFamily: "Montserrat_700Bold",
-    fontSize: 10,
-    letterSpacing: 1,
-    color: "#111",
-  },
-
- 
-  headerRow: {
-    marginTop: 6,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  backBtn: {
-    width: 28,
-    height: 28,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    flex: 1,
-    fontFamily: "Montserrat_700Bold",
-    fontSize: 20,
-    color: "#555",
+  container: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 20, paddingTop: 40 },
+  title: {
+    fontFamily: "Montserrat_600SemiBold",
+    fontSize: 18,
+    color: "#6B6B6B",
+    marginBottom: 16,
   },
 
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginTop: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 10,
+    padding: 16,
+    marginBottom: 12,
     elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    position: "relative",
   },
   cardTitle: {
     fontFamily: "Montserrat_700Bold",
-    fontSize: 18,
-    color: "#222",
-  },
-  cardDesc: {
-    marginTop: 4,
-    fontFamily: "Montserrat_400Regular",
-    fontSize: 13,
-    color: "#6a6a6a",
-  },
-  closeBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#EFEFEF",
-  },
-
-
-  inputLabel: {
-    marginTop: 18,
-    marginBottom: 8,
-    fontFamily: "Montserrat_600SemiBold",
-    fontSize: 14,
+    fontSize: 16,
     color: "#333",
   },
-  addRow: { flexDirection: "row", gap: 10, alignItems: "center" },
-  input: {
-    flex: 1,
-    height: 42,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#D7D7D7",
-    paddingHorizontal: 12,
+  cardDesc: {
     fontFamily: "Montserrat_400Regular",
     fontSize: 14,
-    color: "#111",
-    backgroundColor: "#fff",
+    color: "#777",
   },
-  addBtn: {
-    paddingHorizontal: 18,
-    height: 42,
-    borderRadius: 10,
-    backgroundColor: "#6B655E",
+  cardClose: {
+    position: "absolute",
+    right: 12,
+    top: 12,
+  },
+
+  inputRow: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    marginTop: 20,
+    gap: 8,
   },
-  addText: {
-    fontFamily: "Montserrat_600SemiBold",
+  inputLabel: {
+    fontFamily: "Montserrat_500Medium",
+    color: "#6B6B6B",
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    height: 36,
+  },
+  createButton: {
+    backgroundColor: TAUPE,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  createButtonText: {
+    fontFamily: "Montserrat_500Medium",
     fontSize: 14,
     color: "#fff",
   },
 
-  
   tabbar: {
     position: "absolute",
     left: 12,
