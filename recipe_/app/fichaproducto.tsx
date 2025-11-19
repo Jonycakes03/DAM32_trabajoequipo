@@ -1,95 +1,82 @@
 // app/product/[id].tsx  (o donde prefieras)
-import React from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
+import { Link, useLocalSearchParams } from "expo-router";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { supabase } from "../utils/supabase";
 
 const TAUPE = "#5b524b";
 
-const product = {
-  name: "Limpiador Facial",
-  brand: "Cerave",
-  avgRating: 4.2,
-  reviewsCount: 324,
-  score: 8.5, // de 10
-  info: {
-    skinType: "Todo tipo",
-    fragrance: "Fragrance-Free",
-    spf: "No",
-    crueltyFree: "Sí",
-  },
-  mainIngredients: [
-    { name: "Hyaluronic Acid", status: "Seguro" },
-    { name: "Glycerin", status: "Seguro" },
-    { name: "Cetyl Alcohol", status: "Moderado" },
-  ],
+type Producto = {
+  id: string;
+  nombre: string;
+  marca: string;
+  imagen: string;
+  valoracion?: number;
+  ingredientes: string;
+  informacion: string;
 };
 
 export default function ProductScreen() {
+  const { id } = useLocalSearchParams();
+  const [product, setProduct] = useState<Producto | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    // Fetch product by id
+    supabase
+      .from("Productos")
+      .select("id, nombre, marca, imagen, valoracion, ingredientes, informacion")
+      .eq("id", id)
+      .single()
+      .then(({ data, error }) => {
+        if (data) setProduct(data as Producto);
+      });
+  }, [id]);
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <Text style={styles.header}>Producto</Text>
+        
         <View style={styles.separator} />
 
-        {/* Placeholder de imagen */}
+        {/* Image */}
         <View style={styles.imagePlaceholder}>
-          <Text style={styles.placeholderText}>Sin imagen</Text>
+          {product?.imagen ? (
+            <Image source={{ uri: product.imagen }} style={{ width: "100%", height: "100%", borderRadius: 12 }} resizeMode="cover" />
+          ) : (
+            <Text style={styles.placeholderText}>Sin imagen</Text>
+          )}
         </View>
 
-        {/* Card principal con nombre/marca y rating */}
-        <View style={styles.card}>
-          <Text style={styles.title}>{product.name}</Text>
-          <Text style={styles.sub}>Marca: {product.brand}</Text>
-
-          <Text style={styles.smallMuted}>
-            {product.avgRating} ({product.reviewsCount} reseñas)
-          </Text>
-
-          <View style={styles.scoreRow}>
-            <Text style={styles.scoreLeft}>Valoración</Text>
-            <Text style={styles.scoreRight}>{product.score}/10</Text>
-          </View>
-        </View>
-
-        {/* Botones tipo tabs */}
-        <View style={styles.tabButtons}>
-          <OutlineBtn label="Ingredientes" />
-          <OutlineBtn label="Reseñas" />
-          <OutlineBtn label="Alertas" />
-        </View>
-
-        {/* Información */}
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Información</Text>
-          <InfoRow label="Tipo de piel" value={product.info.skinType} />
-          <InfoRow label="Fragancia" value={product.info.fragrance} />
-          <InfoRow label="SPF" value={product.info.spf} />
-          <InfoRow label="Cruelty-Free" value={product.info.crueltyFree} />
-        </View>
-
-        {/* Ingredientes principales */}
-        <View style={styles.card}>
-          <View style={styles.cardHeaderRow}>
-            <Text style={styles.sectionTitle}>Ingredientes principales</Text>
-            <TouchableOpacity>
-              <Text style={styles.linkText}>Ver todos</Text>
-            </TouchableOpacity>
-          </View>
-
-          {product.mainIngredients.map((ing, idx) => (
-            <View key={idx} style={styles.ingredientRow}>
-              <Text style={styles.ingredientName}>{ing.name}</Text>
-              <Badge status={ing.status} />
+        {product ? (
+          <>
+            <View style={styles.card}>
+              <Text style={styles.title}>{product.nombre}</Text>
+              <Text style={styles.sub}>Marca: {product.marca}</Text>
+              {product.valoracion !== undefined && (
+                <Text style={styles.smallMuted}>Valoración: {product.valoracion}</Text>
+              )}
             </View>
-          ))}
-        </View>
+
+            <View style={styles.card}>
+              <Text style={styles.sectionTitle}>Ingredientes</Text>
+              <Text style={{ marginTop: 8 }}>{product.ingredientes}</Text>
+            </View>
+
+            <View style={styles.card}>
+              <Text style={styles.sectionTitle}>Información</Text>
+              <Text style={{ marginTop: 8 }}>{product.informacion}</Text>
+            </View>
+          </>
+        ) : (
+          <Text style={{ textAlign: "center", marginTop: 40 }}>Cargando producto...</Text>
+        )}
 
         <View style={{ height: 110 }} />
       </ScrollView>
 
-      {/* Tabbar (Search activo) */}
+      {/* Tabbar */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>

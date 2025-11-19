@@ -1,10 +1,48 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
+import { BackHandler, Platform } from "react-native";
+import { useEffect } from "react";
 
 export default function RootLayout() {
+  const router = useRouter();
+  const segments = useSegments();
+
+  useEffect(() => {
+    // Only handle Android hardware back button. iOS and web use their own navigation.
+    if (Platform.OS !== "android") return;
+
+    const onBack = () => {
+      // Determine the active route segment (last part of the path)
+      const active = segments.length > 0 ? segments[segments.length - 1] : "index";
+
+      // If we're at the home screen, send the user to the index menu (replace so it doesn't stack)
+      if (active === "home") {
+        router.replace("/");
+        return true; // handled
+      }
+
+      // If we're at the index screen, allow default behavior (let system handle exit)
+      if (active === "index") {
+        return false; // not handled here -> system will process (may exit)
+      }
+
+      // For other screens, navigate back (pop)
+      router.back();
+      return true;
+    };
+
+    const sub = BackHandler.addEventListener("hardwareBackPress", onBack);
+    return () => sub.remove();
+  }, [router, segments]);
+
   return (
-    <Stack screenOptions={{ 
-      headerLeft: () => null, // This removes the on-screen back button
-    }} >
+    // remove on-screen back button globally; rely on system back
+    <Stack
+      screenOptions={{
+        headerLeft: () => null,
+        // try to hide back affordance in header (supporting versions that expose this option)
+        headerBackVisible: false,
+      }}
+    >
       <Stack.Screen 
         name="index" 
         options={{ 
@@ -71,6 +109,13 @@ export default function RootLayout() {
         name="fichaproducto" 
         options={{
           headerTitle: "Detalle de Receta",
+          headerBackTitle: "Atrás"
+        }}
+      />
+      <Stack.Screen 
+        name="dbtest" 
+        options={{
+          headerTitle: "prueba BD",
           headerBackTitle: "Atrás"
         }}
       />
