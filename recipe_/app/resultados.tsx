@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   FlatList,
   Image,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { supabase } from "../utils/supabase";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 
 const TAUPE = "#5b524b";
@@ -20,31 +21,53 @@ const HEADER_BG = "#EFEFEF";
 
 type Product = {
   id: string;
-  brand: string;
-  name: string;
-  safety: string; // e.g. "97/100"
-  image?: string;
+  nombre: string;
+  marca: string;
+  imagen: string;
+  valoracion?: number;
+  ingredientes: string;
+  informacion: string;
 };
 
 export default function ResultsScreen() {
+  const { barcode } = useLocalSearchParams();
+  const router = useRouter();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (barcode) {
+      setLoading(true);
+      supabase
+        .from("Productos")
+        .select("id, nombre, marca, imagen, valoracion, ingredientes, informacion")
+        .eq("barcode", barcode)
+        .single()
+        .then(({ data, error }) => {
+          setProduct(data || null);
+          setLoading(false);
+        });
+    }
+  }, [barcode]);
+
+  // Default products for grid (if no barcode)
   const products: Product[] = useMemo(
     () =>
       Array.from({ length: 8 }).map((_, i) => ({
         id: String(i + 1),
-        brand: "Cerave",
-        name: "Hydrating Cleanser",
-        safety: "97/100",
-        image: undefined, // put a URI or require() here if you have assets
+        nombre: "Hydrating Cleanser",
+        marca: "Cerave",
+  imagen: "",
+        valoracion: 97,
+        ingredientes: "Agua, Glicerina, Ceramidas",
+        informacion: "Limpiador hidratante para piel normal a seca.",
       })),
     []
   );
 
   return (
     <View style={styles.container}>
-      {/* thin top gray bar (like your mockups) */}
       <View style={styles.headerStrip} />
-
-      {/* Top Row: Title, Chips and Filter button */}
       <View style={styles.top}>
         <Text style={styles.title}>Resultados</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -58,23 +81,43 @@ export default function ResultsScreen() {
         </View>
       </View>
 
-      {/* Grid */}
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 12, paddingHorizontal: 12 }}
-        contentContainerStyle={{ paddingBottom: 110, paddingTop: 8, gap: 12 }}
-        renderItem={({ item, index }) => (
-          <ProductCard
-            product={item}
-            highlight={index === 0} // left-top card with blue outline like the mock
-          />
-        )}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <Text style={{ textAlign: "center", marginTop: 40 }}>Buscando producto...</Text>
+      ) : barcode && product ? (
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => router.push({ pathname: "/fichaproducto", params: { id: product.id } })}
+          style={{ margin: 20 }}
+        >
+          <View style={{ padding: 20, backgroundColor: CARD, borderRadius: 12, borderWidth: 1, borderColor: CARD_BORDER }}>
+            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}>Producto escaneado</Text>
+            <Text style={{ fontSize: 16 }}>Nombre: {product.nombre}</Text>
+            <Text style={{ fontSize: 16 }}>Marca: {product.marca}</Text>
+            {product.imagen ? (
+              <Image source={{ uri: product.imagen }} style={{ width: 160, height: 160, marginTop: 10, borderRadius: 8 }} />
+            ) : null}
+          </View>
+        </TouchableOpacity>
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          columnWrapperStyle={{ gap: 12, paddingHorizontal: 12 }}
+          contentContainerStyle={{ paddingBottom: 110, paddingTop: 8, gap: 12 }}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={() => router.push({ pathname: "/fichaproducto", params: { id: item.id } })}
+              style={{ flex: 1, marginBottom: 12 }}
+            >
+              <ProductCard product={item} highlight={index === 0} />
+            </TouchableOpacity>
+          )}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
-      {/* Bottom Tabbar */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -94,7 +137,7 @@ export default function ResultsScreen() {
             <Text style={styles.tabLabel}>Listas</Text>
           </TouchableOpacity>
         </Link>
-        <Link href="/pefil" asChild>
+        <Link href="/perfil" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="person-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Perfil</Text>
@@ -119,25 +162,25 @@ function ProductCard({ product, highlight }: { product: Product; highlight?: boo
     <TouchableOpacity activeOpacity={0.9} style={[styles.card, highlight && styles.cardHighlight]}>
       {/* Image area */}
       <View style={[styles.imageBox, highlight && styles.imageHighlight]}>
-        {product.image ? (
+        {product.imagen ? (
           <Image
-            source={{ uri: product.image }}
+            source={{ uri: product.imagen }}
             style={{ width: "100%", height: "100%" }}
             resizeMode="contain"
           />
         ) : null}
       </View>
 
-      {/* Safety badge */}
+      {/* Valoracion badge */}
       <View style={styles.badge}>
-        <Text style={styles.badgeText}>Seguridad: {product.safety}</Text>
+        <Text style={styles.badgeText}>Valoración: {product.valoracion ?? "-"}</Text>
       </View>
 
-      {/* Brand + name */}
+      {/* Marca + nombre */}
       <View style={{ paddingHorizontal: 10, paddingTop: 8, paddingBottom: 12 }}>
-        <Text style={styles.brand}>{product.brand}</Text>
+        <Text style={styles.brand}>{product.marca}</Text>
         <Text numberOfLines={2} style={styles.productName}>
-          {product.name}
+          {product.nombre}
         </Text>
       </View>
     </TouchableOpacity>

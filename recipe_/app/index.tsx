@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function Page() {
+  const router = useRouter();
+
   const pages = [
     { name: "Login", path: "/login" },
     { name: "Crear Cuenta", path: "/crearcuenta" },
@@ -12,6 +14,7 @@ export default function Page() {
     { name: "Detalles de Lista", path: "/listas_2" },
     { name: "Resultados", path: "/resultados" },
     { name: "Ficha de Producto", path: "/fichaproducto" },
+    {name: "Prueba db", path: "/dbtest"},
   ];
 
   return (
@@ -22,11 +25,13 @@ export default function Page() {
         
         <View style={styles.linksContainer}>
           {pages.map((page) => (
-            <Link key={page.path} href={page.path} asChild>
-              <TouchableOpacity style={styles.linkButton}>
-                <Text style={styles.linkText}>{page.name}</Text>
-              </TouchableOpacity>
-            </Link>
+            <TouchableOpacity
+              key={page.path}
+              style={styles.linkButton}
+              onPress={() => router.replace(page.path)}
+            >
+              <Text style={styles.linkText}>{page.name}</Text>
+            </TouchableOpacity>
           ))}
         </View>
       </View>

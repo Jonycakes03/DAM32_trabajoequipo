@@ -40,7 +40,7 @@ export default function SearchScreen() {
             />
 
             {/* Scan card */}
-            <Link href="/scan" asChild>
+            <Link href="/escanear" asChild>
               <TouchableOpacity style={styles.scanCard}>
                 <Feather name="camera" size={26} />
                 <Text style={styles.scanTitle}>Escanea producto</Text>
