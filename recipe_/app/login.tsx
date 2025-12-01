@@ -1,155 +1,217 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Link } from "expo-router";
 
 export default function Login() {
   return (
-    <View style={styles.container}>
-      <View style={styles.brandRow}>
-        <Text style={styles.brand}>CLEARLABEL</Text>
-        <View style={styles.brandBox}>
-          <Text style={styles.brandCheck}>✓</Text>
-        </View>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        {/* Logo en el centro */}
+        <View style={styles.logoContainer}>
+          <Text style={styles.brand}>CLEARLABEL</Text>
 
-      <View style={styles.card}>
-        <View style={styles.field}>
-          <Text style={styles.label}>Correo</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="example@email.com"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#9B9B9B"
-          />
+          <View style={styles.brandBox}>
+            <Text style={styles.brandCheck}>✓</Text>
+          </View>
         </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="password segura"
-            secureTextEntry
-            placeholderTextColor="#9B9B9B"
-          />
+        {/* Card principal, ahora bien centrada */}
+        <View style={styles.card}>
+          <Text style={styles.title}>Iniciar sesión</Text>
+          <Text style={styles.description}>
+            Accede a tus listas, búsquedas y recomendaciones personalizadas.
+          </Text>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Correo</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="example@email.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#B1ABA6"
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Contraseña</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="contraseña segura"
+              secureTextEntry
+              placeholderTextColor="#B1ABA6"
+            />
+          </View>
+
+          <Link href="/home" asChild>
+            <TouchableOpacity style={styles.primaryButton}>
+              <Text style={styles.primaryButtonText}>Ingresar</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/forgot" asChild>
+            <TouchableOpacity>
+              <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
+            </TouchableOpacity>
+          </Link>
         </View>
 
-        <Link href="/home" asChild>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Ingresar</Text>
+        {/* Crear cuenta */}
+        <Link href="/register" asChild>
+          <TouchableOpacity style={styles.outlineBtn}>
+            <Text style={styles.outlineBtnText}>Crear cuenta</Text>
           </TouchableOpacity>
         </Link>
-
-        <Link href="/forgot" asChild>
-          <TouchableOpacity>
-            <Text style={styles.forgotText}>Se te olvidó la contraseña?</Text>
-          </TouchableOpacity>
-        </Link>
-      </View>
-
-      <Link href="/register" asChild>
-        <TouchableOpacity style={styles.outlineBtn}>
-          <Text style={styles.outlineBtnText}>Crear Cuenta</Text>
-        </TouchableOpacity>
-      </Link>
-    </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
-const TAUPE = "#5b524b";
-const DARK = "#2f2f2f";
-const BORDER = "#4a423c";
+const BACKGROUND = "#FFFFFF";
+const CARD_BG = "#F5F1ED";
+const TEXT_MAIN = "#3B302A";
+const ACCENT = "#594A42";
+const DARK = "#333";
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: BACKGROUND,
+  },
+
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
     paddingHorizontal: 24,
+    justifyContent: "center", // ✔ Centrado vertical real
+    paddingBottom: 32,
   },
-  brandRow: {
+
+  /* LOGO */
+  logoContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginTop: 60,
-    marginBottom: 24,
-    alignSelf: "flex-start",
+    alignSelf: "center",
+    marginBottom: 32,
+    gap: 10,
   },
+
   brand: {
-    fontSize: 24,
-    letterSpacing: 2,
+    fontSize: 26,
     fontWeight: "700",
-    color: "#111",
+    letterSpacing: 3,
+    color: DARK,
   },
+
   brandBox: {
     width: 36,
-    height: 28,
+    height: 30,
     borderWidth: 2,
-    borderColor: "#111",
+    borderColor: DARK,
     alignItems: "center",
     justifyContent: "center",
   },
+
   brandCheck: {
     fontSize: 18,
-    color: "#111",
+    color: DARK,
     lineHeight: 18,
   },
+
+  /* CARD */
   card: {
-    alignSelf: "center",
-    width: "88%",
-    maxWidth: 520,
-    backgroundColor: TAUPE,
-    borderRadius: 12,
-    padding: 24,
-    gap: 10,
+    width: "100%",
+    backgroundColor: CARD_BG,
+    borderRadius: 24,
+    paddingHorizontal: 22,
+    paddingVertical: 30,
     shadowColor: "#000",
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.08,
     shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 12,
-    elevation: 6,
-    marginTop: 24,
+    shadowRadius: 14,
+    elevation: 5,
   },
-  field: {
-    marginBottom: 8,
-  },
-  label: {
-    color: "#e9e6e3",
+
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: TEXT_MAIN,
     marginBottom: 6,
-    fontSize: 16,
+    textAlign: "center",
   },
+
+  description: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#6C5A52",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+
+  field: {
+    marginBottom: 14,
+  },
+
+  label: {
+    color: TEXT_MAIN,
+    fontSize: 14,
+    marginBottom: 6,
+  },
+
   input: {
-    backgroundColor: "#ffffff",
-    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
+    fontSize: 14,
   },
-  button: {
-    marginTop: 14,
-    backgroundColor: DARK,
+
+  primaryButton: {
+    marginTop: 10,
+    backgroundColor: ACCENT,
     paddingVertical: 14,
-    borderRadius: 10,
+    borderRadius: 20,
   },
-  buttonText: {
-    color: "#fff",
+
+  primaryButtonText: {
+    color: "#FFFFFF",
     textAlign: "center",
     fontSize: 16,
     fontWeight: "600",
   },
+
   forgotText: {
-    marginTop: 14,
-    color: "#1f1f1f",
+    marginTop: 12,
+    color: "#6C5A52",
+    fontSize: 13,
     textDecorationLine: "underline",
+    textAlign: "center",
   },
+
   outlineBtn: {
     alignSelf: "center",
-    marginTop: 28,
-    borderWidth: 2,
-    borderColor: BORDER,
-    borderRadius: 12,
+    marginTop: 22,
+    borderWidth: 1.5,
+    borderColor: ACCENT,
+    borderRadius: 999,
     paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
   },
+
   outlineBtnText: {
-    color: "#3a352f",
-    fontSize: 16,
+    color: ACCENT,
+    fontSize: 15,
     fontWeight: "600",
   },
 });

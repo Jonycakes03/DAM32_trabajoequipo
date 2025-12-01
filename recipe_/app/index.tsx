@@ -12,6 +12,15 @@ export default function Page() {
     { name: "Detalles de Lista", path: "/listas_2" },
     { name: "Resultados", path: "/resultados" },
     { name: "Ficha de Producto", path: "/fichaproducto" },
+    { name: "Filtros", path: "/filtro" },
+     { name: "Editar Perfil", path: "/editarperfil" },
+    { name: "piel", path: "piel" },
+        { name: "OnboardingScreen", path: "OnboardingScreen" },
+    { name: "ScanScreen", path: "ScanScreen" },
+    { name: "ProductRecommendationsScreen", path: "ProductRecommendationsScreen" },
+    { name: "ProductReviewsScreen", path: "ProductReviewsScreen" },
+    { name: "CompareProductsScreen", path: "CompareProductsScreen" },
+
   ];
 
   return (

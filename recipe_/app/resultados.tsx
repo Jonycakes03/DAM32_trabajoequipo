@@ -1,3 +1,4 @@
+// app/resultados.tsx (o como se llame tu ruta)
 import React, { useMemo } from "react";
 import {
   View,
@@ -6,17 +7,20 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  SafeAreaView,
 } from "react-native";
 import { Link } from "expo-router";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 
-const TAUPE = "#5b524b";
-const GREEN = "#4CAF50";
+/* PALETA CLEARLABEL */
+const TAUPE = "#5B524B";
+const BACKGROUND = "#FFFFFF";
+const HEADER_BG = "#F5F1ED";
 const CHIP = "#D8EBD6";
 const CHIP_TEXT = "#4A6B46";
 const CARD = "#FFFFFF";
 const CARD_BORDER = "#E6E6E6";
-const HEADER_BG = "#EFEFEF";
+const GREEN = "#4CAF50";
 
 type Product = {
   id: string;
@@ -34,47 +38,60 @@ export default function ResultsScreen() {
         brand: "Cerave",
         name: "Hydrating Cleanser",
         safety: "97/100",
-        image: undefined, // put a URI or require() here if you have assets
+        image: undefined,
       })),
     []
   );
 
   return (
-    <View style={styles.container}>
-      {/* thin top gray bar (like your mockups) */}
-      <View style={styles.headerStrip} />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* HEADER CON LOGO */}
+        <View style={styles.headerBar}>
+          <View style={styles.headerSide}>
+            <View style={styles.brandBox}>
+              <Text style={styles.brandCheck}>✓</Text>
+            </View>
+          </View>
 
-      {/* Top Row: Title, Chips and Filter button */}
-      <View style={styles.top}>
-        <Text style={styles.title}>Resultados</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <FilterChip label="No parabenos" />
-          <FilterChip label="No parabenos" />
-          <Link href="/filters" asChild>
-            <TouchableOpacity style={styles.filterBtn}>
-              <Text style={styles.filterBtnText}>Filtro</Text>
-            </TouchableOpacity>
-          </Link>
+          <Text style={styles.headerTitle}>CLEARLABEL</Text>
+
+          <View style={styles.headerSide} />
         </View>
+
+        {/* CONTENIDO */}
+        <View style={styles.top}>
+          <Text style={styles.pageTitle}>Resultados</Text>
+          <Text style={styles.pageSubtitle}>
+            Estos son los productos que cumplen con tus filtros seleccionados.
+          </Text>
+
+          <View style={styles.filtersRow}>
+            <FilterChip label="No parabenos" />
+            <FilterChip label="No parabenos" />
+            <Link href="/filters" asChild>
+              <TouchableOpacity style={styles.filterBtn}>
+                <Text style={styles.filterBtnText}>Filtro</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+        </View>
+
+        {/* GRID */}
+        <FlatList
+          data={products}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item, index }) => (
+            <ProductCard product={item} highlight={index === 0} />
+          )}
+        />
       </View>
 
-      {/* Grid */}
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 12, paddingHorizontal: 12 }}
-        contentContainerStyle={{ paddingBottom: 110, paddingTop: 8, gap: 12 }}
-        renderItem={({ item, index }) => (
-          <ProductCard
-            product={item}
-            highlight={index === 0} // left-top card with blue outline like the mock
-          />
-        )}
-        showsVerticalScrollIndicator={false}
-      />
-
-      {/* Bottom Tabbar */}
+      {/* TABBAR INFERIOR */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -82,42 +99,56 @@ export default function ResultsScreen() {
             <Text style={styles.tabLabel}>Home</Text>
           </TouchableOpacity>
         </Link>
+
         <Link href="/buscar" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="search-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Buscar</Text>
           </TouchableOpacity>
         </Link>
+
         <Link href="/listas" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <AntDesign name="heart" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Listas</Text>
           </TouchableOpacity>
         </Link>
-        <Link href="/pefil" asChild>
+
+        <Link href="/perfil" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="person-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Perfil</Text>
           </TouchableOpacity>
         </Link>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
+
+/* --------- COMPONENTES PEQUEÑOS --------- */
 
 function FilterChip({ label }: { label: string }) {
   return (
     <View style={styles.chip}>
       <Text style={styles.chipText}>{label}</Text>
-      <Text style={styles.chipX}>  ×</Text>
+      <Text style={styles.chipX}>×</Text>
     </View>
   );
 }
 
-function ProductCard({ product, highlight }: { product: Product; highlight?: boolean }) {
+function ProductCard({
+  product,
+  highlight,
+}: {
+  product: Product;
+  highlight?: boolean;
+}) {
   return (
-    <TouchableOpacity activeOpacity={0.9} style={[styles.card, highlight && styles.cardHighlight]}>
-      {/* Image area */}
+    <TouchableOpacity
+      activeOpacity={0.9}
+      style={[styles.card, highlight && styles.cardHighlight]}
+    >
+      {/* Imagen / placeholder */}
       <View style={[styles.imageBox, highlight && styles.imageHighlight]}>
         {product.image ? (
           <Image
@@ -128,13 +159,13 @@ function ProductCard({ product, highlight }: { product: Product; highlight?: boo
         ) : null}
       </View>
 
-      {/* Safety badge */}
+      {/* Badge de seguridad */}
       <View style={styles.badge}>
         <Text style={styles.badgeText}>Seguridad: {product.safety}</Text>
       </View>
 
-      {/* Brand + name */}
-      <View style={{ paddingHorizontal: 10, paddingTop: 8, paddingBottom: 12 }}>
+      {/* Marca + nombre */}
+      <View style={styles.cardText}>
         <Text style={styles.brand}>{product.brand}</Text>
         <Text numberOfLines={2} style={styles.productName}>
           {product.name}
@@ -144,74 +175,142 @@ function ProductCard({ product, highlight }: { product: Product; highlight?: boo
   );
 }
 
+/* --------- ESTILOS --------- */
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  headerStrip: { height: 16, backgroundColor: HEADER_BG },
-  top: {
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 6,
-    gap: 8,
+  safeArea: {
+    flex: 1,
+    backgroundColor: BACKGROUND,
   },
-  title: {
-    fontFamily: "Montserrat_600SemiBold",
+  container: {
+    flex: 1,
+    backgroundColor: BACKGROUND,
+    paddingBottom: 80,
+  },
+
+  /* HEADER CLEARLABEL */
+  headerBar: {
+    height: 64,
+    backgroundColor: HEADER_BG,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  headerSide: {
+    width: 40,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
     fontSize: 16,
-    color: "#1A1A1A",
-    marginBottom: 8,
+    letterSpacing: 5,
+    color: "#3B302A",
+    fontWeight: "600",
+  },
+  brandBox: {
+    width: 30,
+    height: 24,
+    borderWidth: 2,
+    borderColor: "#3B302A",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  brandCheck: {
+    fontSize: 14,
+    color: "#3B302A",
+    lineHeight: 14,
+  },
+
+  /* CONTENIDO SUPERIOR */
+  top: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  pageTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#3B302A",
+    marginBottom: 4,
+  },
+  pageSubtitle: {
+    fontSize: 13,
+    color: "#8A7C73",
+    marginBottom: 10,
+  },
+  filtersRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
   },
 
   chip: {
     backgroundColor: CHIP,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 12,
+    borderRadius: 14,
     flexDirection: "row",
     alignItems: "center",
+    gap: 4,
   },
   chipText: {
-    fontFamily: "Montserrat_600SemiBold",
     fontSize: 12,
     color: CHIP_TEXT,
+    fontWeight: "600",
   },
   chipX: {
-    fontFamily: "Montserrat_600SemiBold",
     fontSize: 12,
     color: CHIP_TEXT,
+    fontWeight: "600",
   },
 
   filterBtn: {
     backgroundColor: CHIP,
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 12,
+    borderRadius: 14,
   },
   filterBtnText: {
-    fontFamily: "Montserrat_600SemiBold",
     fontSize: 12,
     color: CHIP_TEXT,
+    fontWeight: "600",
+  },
+
+  /* GRID */
+  columnWrapper: {
+    gap: 12,
+    paddingHorizontal: 20,
+  },
+  listContent: {
+    paddingTop: 8,
+    paddingBottom: 120,
+    rowGap: 12,
   },
 
   card: {
     flex: 1,
     backgroundColor: CARD,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: CARD_BORDER,
     overflow: "hidden",
     shadowColor: "#000",
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.06,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
     elevation: 3,
   },
   cardHighlight: {
-    shadowOpacity: 0.14,
+    shadowOpacity: 0.12,
     elevation: 5,
   },
 
   imageBox: {
     height: 140,
-    backgroundColor: "#F6F6F6",
+    backgroundColor: "#F6F4F1",
     borderBottomWidth: 1,
     borderBottomColor: CARD_BORDER,
   },
@@ -225,55 +324,63 @@ const styles = StyleSheet.create({
 
   badge: {
     position: "absolute",
-    left: 10,
-    top: 120,
+    left: 12,
+    top: 118,
     backgroundColor: GREEN,
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
   badgeText: {
-    color: "#fff",
+    color: "#FFFFFF",
     fontSize: 11,
-    fontFamily: "Montserrat_700Bold",
+    fontWeight: "700",
   },
 
+  cardText: {
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 12,
+  },
   brand: {
-    fontFamily: "Montserrat_600SemiBold",
     fontSize: 12,
-    color: "#777",
+    color: "#777777",
+    fontWeight: "600",
     marginBottom: 2,
   },
   productName: {
-    fontFamily: "Montserrat_600SemiBold",
     fontSize: 14,
     color: "#1F1F1F",
+    fontWeight: "600",
     lineHeight: 18,
   },
 
-  /* Tab bar */
+  /* TABBAR */
   tabbar: {
     position: "absolute",
     left: 12,
     right: 12,
     bottom: 10,
     backgroundColor: TAUPE,
-    borderRadius: 16,
+    borderRadius: 18,
     paddingVertical: 8,
     paddingHorizontal: 10,
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.18,
     shadowOffset: { width: 0, height: 6 },
     shadowRadius: 12,
     elevation: 8,
   },
-  tabItem: { alignItems: "center", gap: 2, width: 70 },
+  tabItem: {
+    alignItems: "center",
+    gap: 2,
+    width: 70,
+  },
   tabLabel: {
-    fontFamily: "Montserrat_400Regular",
     fontSize: 12,
-    color: "#fff",
+    color: "#FFFFFF",
   },
 });

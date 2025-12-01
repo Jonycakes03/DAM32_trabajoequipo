@@ -1,138 +1,177 @@
+// app/perfil/index.tsx
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { Link } from "expo-router";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 const TAUPE = "#5b524b";
-const AVATAR = "#B7A9AB";
+const CARD_BG = "#f7f5f3";
 
-export default function ProfileScreen() {
-  const onSignOut = () => {
-    console.log("Cerrar sesión");
-  };
+const Row = ({
+  icon,
+  label,
+  href,
+}: {
+  icon: any;
+  label: string;
+  href?: string;
+}) => {
+  const content = (
+    <View style={styles.row}>
+      <View style={styles.rowLeft}>
+        <Ionicons name={icon} size={18} color={TAUPE} style={{ marginRight: 8 }} />
+        <Text style={styles.rowText}>{label}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={TAUPE} />
+    </View>
+  );
 
+  if (href) {
+    return (
+      <Link href={href} asChild>
+        <TouchableOpacity>{content}</TouchableOpacity>
+      </Link>
+    );
+  }
+
+  return <View>{content}</View>;
+};
+
+export default function PerfilScreen() {
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.headerSpacer} />
-
-      {/* Perfil */}
-      <View style={styles.headerRow}>
-        <View style={styles.avatar} />
-        <Text style={styles.name}>Johnatan Suarez</Text>
+      {/* Header ClearLabel */}
+      <View style={styles.header}>
+        <Text style={styles.brand}>CLEARLABEL</Text>
+        <Ionicons name="mail-outline" size={20} color={TAUPE} />
       </View>
 
-      {/* Opciones */}
-      <View style={styles.menu}>
-        <MenuItem label="Ajustes" href="/settings" />
-        <MenuItem label="Historial" href="/history" />
-        <MenuItem label="Reestablecer contraseña" href="/reset-password" />
-        <MenuItem label="Preferencias" href="/preferences" />
-        <MenuItem label="Reseñas" href="/reviews" />
-        <TouchableOpacity onPress={onSignOut} style={styles.menuRow}>
-          <Text style={styles.menuText}>Cerrar sesión</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* Título */}
+        <Text style={styles.title}>Perfil</Text>
 
-      {/* Tabbar */}
-      <View style={styles.tabbar}>
-        <Link href="/home" asChild>
-          <TouchableOpacity style={styles.tabItem}>
-            <Ionicons name="home-outline" size={22} color="#fff" />
-            <Text style={styles.tabLabel}>Home</Text>
-          </TouchableOpacity>
-        </Link>
+        {/* Banner simple (opcional) */}
+        <View style={styles.banner}>
+          <Text style={styles.bannerTitle}>Personaliza tu experiencia</Text>
+          <Text style={styles.bannerText}>
+            Define tu tipo de piel y obtén análisis más precisos.
+          </Text>
+        </View>
 
-        <Link href="/buscar" asChild>
-          <TouchableOpacity style={styles.tabItem}>
-            <Ionicons name="search-outline" size={22} color="#fff" />
-            <Text style={styles.tabLabel}>Buscar</Text>
-          </TouchableOpacity>
-        </Link>
+        {/* Grupo 1 */}
+        <View style={styles.card}>
+          <Row icon="leaf-outline" label="Tu piel y cabello" href="/perfil/piel" />
+          <View style={styles.divider} />
+          <Row
+            icon="sparkles-outline"
+            label="Rutina de cuidado de piel"
+            href="/perfil/rutina"
+          />
+          <View style={styles.divider} />
+          <Row icon="star-outline" label="Mis reseñas" href="/perfil/resenas" />
+        </View>
 
-        <Link href="/listas" asChild>
-          <TouchableOpacity style={styles.tabItem}>
-            {/* Corazón solo con contorno */}
-            <AntDesign name="heart" size={22} color="#fff" />
-            <Text style={styles.tabLabel}>Listas</Text>
-          </TouchableOpacity>
-        </Link>
+        {/* Grupo 2 */}
+        <View style={styles.card}>
+          <Row
+            icon="person-outline"
+            label="Administrar cuenta"
+            href="/perfil/cuenta"
+          />
+          <View style={styles.divider} />
+          <Row
+            icon="notifications-outline"
+            label="Notificaciones"
+            href="/perfil/notificaciones"
+          />
+        </View>
 
-        <Link href="/perfil" asChild>
-          <TouchableOpacity style={styles.tabItem}>
-            {/* Ícono relleno ya que estamos en perfil */}
-            <Ionicons name="person" size={22} color="#fff" />
-            <Text style={[styles.tabLabel, { fontWeight: "700" }]}>Perfil</Text>
-          </TouchableOpacity>
-        </Link>
-      </View>
+        {/* Grupo 3 */}
+        <View style={styles.card}>
+          <Row
+            icon="shield-checkmark-outline"
+            label="Política de privacidad"
+            href="/perfil/privacidad"
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
-function MenuItem({ label, href }: { label: string; href: any }) {
-  return (
-    <Link href={href} asChild>
-      <TouchableOpacity style={styles.menuRow}>
-        <Text style={styles.menuText}>{label}</Text>
-      </TouchableOpacity>
-    </Link>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  headerSpacer: { height: 16, backgroundColor: "#EFEFEF" },
-
-  headerRow: {
+  container: { flex: 1, backgroundColor: "#ffffff" },
+  header: {
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: 14,
-    paddingHorizontal: 18,
-    paddingVertical: 20,
+    backgroundColor: "#f0eeeb",
   },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: AVATAR,
-  },
-  name: {
-    fontFamily: "Montserrat_700Bold",
-    fontSize: 18,
-    color: "#6B6B6B",
-  },
-
-  menu: { paddingHorizontal: 24, gap: 18, marginTop: 10 },
-  menuRow: { paddingVertical: 6 },
-  menuText: {
-    fontFamily: "Montserrat_500Medium",
+  brand: {
     fontSize: 16,
-    color: "#6B6B6B",
+    letterSpacing: 1,
+    color: TAUPE,
+    fontWeight: "600",
   },
-
-  tabbar: {
-    position: "absolute",
-    left: 12,
-    right: 12,
-    bottom: 10,
-    backgroundColor: TAUPE,
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: TAUPE,
+    marginBottom: 16,
+  },
+  banner: {
+    backgroundColor: "#fbeee3",
     borderRadius: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 12,
-    elevation: 8,
+    padding: 16,
+    marginBottom: 20,
   },
-  tabItem: { alignItems: "center", gap: 2, width: 70 },
-  tabLabel: {
-    fontFamily: "Montserrat_400Regular",
+  bannerTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: TAUPE,
+    marginBottom: 4,
+  },
+  bannerText: {
     fontSize: 12,
-    color: "#fff",
+    color: "#6a625c",
+  },
+  card: {
+    backgroundColor: CARD_BG,
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginBottom: 16,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    justifyContent: "space-between",
+  },
+  rowLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rowText: {
+    fontSize: 14,
+    color: TAUPE,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#e2ddd7",
   },
 });

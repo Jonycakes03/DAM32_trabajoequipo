@@ -74,6 +74,62 @@ export default function RootLayout() {
           headerBackTitle: "Atrás"
         }}
       />
+      <Stack.Screen 
+        name="filtro" 
+        options={{
+          headerTitle: "friltros",
+          headerBackTitle: "Atrás"
+        }}
+      />
+      <Stack.Screen 
+        name="editarperfil" 
+        options={{
+          headerTitle: "editar perfils",
+          headerBackTitle: "Atrás"
+        }}
+      />
+      
+      <Stack.Screen 
+        name="piel" 
+        options={{
+          headerTitle: "piel",
+          headerBackTitle: "Atrás"
+        }}
+      />
+      
+            <Stack.Screen 
+        name="OnboardingScreen" 
+        options={{
+          headerTitle: "OnboardingScreen",
+          headerBackTitle: "OnboardingScreen"
+        }}
+      />
+
+
+            <Stack.Screen 
+        name="ScanScreen" 
+        options={{
+          headerTitle: "ScanScreen",
+          headerBackTitle: "ScanScreen"
+        }}
+      />
+            <Stack.Screen 
+        name="ProductReviewsScreen" 
+        options={{
+          headerTitle: "ProductReviewsScreen",
+          headerBackTitle: "ProductReviewsScreen"
+        }}
+      />
+      // .tsx CompareProductsScreen
+      
+      <Stack.Screen 
+        name="CompareProductsScreen" 
+        options={{
+          headerTitle: "CompareProductsScreen",
+          headerBackTitle: "CompareProductsScreen"
+        }}
+      />
+      
     </Stack>
   );
 }
