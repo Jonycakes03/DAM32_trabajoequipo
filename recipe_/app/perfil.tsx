@@ -1,14 +1,53 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { Link, router } from "expo-router";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { supabase } from "../utils/supabase";
 
 const TAUPE = "#5b524b";
 const AVATAR = "#B7A9AB";
 
 export default function ProfileScreen() {
-  const onSignOut = () => {
-    console.log("Cerrar sesión");
+  const [name, setName] = useState("Usuario");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  async function fetchProfile() {
+    console.log("Fetching profile...");
+    const { data: { user } } = await supabase.auth.getUser();
+    console.log("User:", user?.id);
+
+    if (user) {
+      const { data, error } = await supabase
+        .from("Usuarios")
+        .select("nombre")
+        .eq("id", user.id)
+        .single();
+
+      console.log("Profile Data:", data);
+      console.log("Profile Error:", error);
+
+      if (data) {
+        setName(data.nombre || "Usuario (Sin nombre)");
+      } else {
+        console.log("No profile found for user");
+      }
+    } else {
+      console.log("No user logged in");
+    }
+    setLoading(false);
+  }
+
+  const onSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      Alert.alert("Error", error.message);
+    } else {
+      router.replace("/login");
+    }
   };
 
   return (
@@ -19,7 +58,14 @@ export default function ProfileScreen() {
       {/* Perfil */}
       <View style={styles.headerRow}>
         <View style={styles.avatar} />
-        <Text style={styles.name}>Johnatan Suarez</Text>
+        <View>
+          {loading ? (
+            <ActivityIndicator size="small" color={TAUPE} />
+          ) : (
+            <Text style={styles.name}>{name}</Text>
+          )}
+          <Text style={styles.subtext}>Ver perfil</Text>
+        </View>
       </View>
 
       {/* Opciones */}
@@ -28,7 +74,7 @@ export default function ProfileScreen() {
         <MenuItem label="Historial" href="/history" />
         <MenuItem label="Reestablecer contraseña" href="/reset-password" />
         <MenuItem label="Preferencias" href="/preferences" />
-        <MenuItem label="Reseñas" href="/reviews" />
+        <MenuItem label="Mis Reseñas" href="/mis_resenas" />
         <TouchableOpacity onPress={onSignOut} style={styles.menuRow}>
           <Text style={styles.menuText}>Cerrar sesión</Text>
         </TouchableOpacity>
@@ -53,7 +99,7 @@ export default function ProfileScreen() {
         <Link href="/listas" asChild>
           <TouchableOpacity style={styles.tabItem}>
             {/* Corazón solo con contorno */}
-            <AntDesign name="heart" size={22} color="#fff" />
+            <Ionicons name="heart-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Listas</Text>
           </TouchableOpacity>
         </Link>
@@ -75,6 +121,7 @@ function MenuItem({ label, href }: { label: string; href: any }) {
     <Link href={href} asChild>
       <TouchableOpacity style={styles.menuRow}>
         <Text style={styles.menuText}>{label}</Text>
+        <Ionicons name="chevron-forward" size={20} color="#ccc" />
       </TouchableOpacity>
     </Link>
   );
@@ -102,9 +149,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#6B6B6B",
   },
+  subtext: {
+    fontFamily: "Montserrat_400Regular",
+    fontSize: 12,
+    color: "#999",
+  },
 
-  menu: { paddingHorizontal: 24, gap: 18, marginTop: 10 },
-  menuRow: { paddingVertical: 6 },
+  menu: { paddingHorizontal: 24, gap: 10, marginTop: 10 },
+  menuRow: {
+    paddingVertical: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0"
+  },
   menuText: {
     fontFamily: "Montserrat_500Medium",
     fontSize: 16,

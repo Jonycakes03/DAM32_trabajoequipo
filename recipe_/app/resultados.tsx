@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { supabase } from "../utils/supabase";
@@ -30,50 +31,83 @@ type Product = {
 };
 
 export default function ResultsScreen() {
-  const { barcode } = useLocalSearchParams();
+  const { barcode, query, rating, ingredients, brand } = useLocalSearchParams();
   const router = useRouter();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchTitle, setSearchTitle] = useState("Resultados");
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 10;
 
   useEffect(() => {
-    if (barcode) {
-      setLoading(true);
-      supabase
-        .from("Productos")
-        .select("id, nombre, marca, imagen, valoracion, ingredientes, informacion")
-        .eq("barcode", barcode)
-        .single()
-        .then(({ data, error }) => {
-          setProduct(data || null);
-          setLoading(false);
-        });
-    }
-  }, [barcode]);
+    setPage(0); // Reset page on new search/filter
+  }, [barcode, query, rating, ingredients, brand]);
 
-  // Default products for grid (if no barcode)
-  const products: Product[] = useMemo(
-    () =>
-      Array.from({ length: 8 }).map((_, i) => ({
-        id: String(i + 1),
-        nombre: "Hydrating Cleanser",
-        marca: "Cerave",
-  imagen: "",
-        valoracion: 97,
-        ingredientes: "Agua, Glicerina, Ceramidas",
-        informacion: "Limpiador hidratante para piel normal a seca.",
-      })),
-    []
-  );
+  useEffect(() => {
+    fetchProducts();
+  }, [barcode, query, rating, ingredients, brand, page]);
+
+  async function fetchProducts() {
+    setLoading(true);
+
+    let dbQuery = supabase
+      .from("Productos")
+      .select("id, nombre, marca, imagen, valoracion, ingredientes, informacion");
+
+    // 1. Barcode Search
+    if (barcode) {
+      setSearchTitle("Producto Escaneado");
+      dbQuery = dbQuery.eq("barcode", barcode);
+    }
+    // 2. Text Search
+    else if (query) {
+      setSearchTitle(`Resultados para "${query}"`);
+      dbQuery = dbQuery.or(`nombre.ilike.%${query}%,marca.ilike.%${query}%`);
+    } else {
+      setSearchTitle("Todos los productos");
+    }
+
+    // 3. Apply Filters
+    if (rating) {
+      dbQuery = dbQuery.gte("valoracion", Number(rating));
+    }
+    if (brand) {
+      const brands = (brand as string).split(",");
+      dbQuery = dbQuery.in("marca", brands);
+    }
+    if (ingredients) {
+      const ingList = (ingredients as string).split(",");
+      if (ingList.length > 0) {
+        dbQuery = dbQuery.ilike("ingredientes", `%${ingList[0]}%`);
+      }
+    }
+
+    // 4. Pagination
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    dbQuery = dbQuery.range(from, to);
+
+    const { data, error } = await dbQuery;
+
+    if (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    } else {
+      setProducts(data || []);
+    }
+    setLoading(false);
+  }
+
+  const nextPage = () => setPage(p => p + 1);
+  const prevPage = () => setPage(p => Math.max(0, p - 1));
 
   return (
     <View style={styles.container}>
       <View style={styles.headerStrip} />
       <View style={styles.top}>
-        <Text style={styles.title}>Resultados</Text>
+        <Text style={styles.title}>{searchTitle}</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <FilterChip label="No parabenos" />
-          <FilterChip label="No parabenos" />
-          <Link href="/filters" asChild>
+          <Link href={{ pathname: "/filtros", params: { query, rating, ingredients, brand } }} asChild>
             <TouchableOpacity style={styles.filterBtn}>
               <Text style={styles.filterBtnText}>Filtro</Text>
             </TouchableOpacity>
@@ -82,22 +116,7 @@ export default function ResultsScreen() {
       </View>
 
       {loading ? (
-        <Text style={{ textAlign: "center", marginTop: 40 }}>Buscando producto...</Text>
-      ) : barcode && product ? (
-        <TouchableOpacity
-          activeOpacity={0.9}
-          onPress={() => router.push({ pathname: "/fichaproducto", params: { id: product.id } })}
-          style={{ margin: 20 }}
-        >
-          <View style={{ padding: 20, backgroundColor: CARD, borderRadius: 12, borderWidth: 1, borderColor: CARD_BORDER }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}>Producto escaneado</Text>
-            <Text style={{ fontSize: 16 }}>Nombre: {product.nombre}</Text>
-            <Text style={{ fontSize: 16 }}>Marca: {product.marca}</Text>
-            {product.imagen ? (
-              <Image source={{ uri: product.imagen }} style={{ width: 160, height: 160, marginTop: 10, borderRadius: 8 }} />
-            ) : null}
-          </View>
-        </TouchableOpacity>
+        <ActivityIndicator size="large" color={TAUPE} style={{ marginTop: 40 }} />
       ) : (
         <FlatList
           data={products}
@@ -105,15 +124,29 @@ export default function ResultsScreen() {
           numColumns={2}
           columnWrapperStyle={{ gap: 12, paddingHorizontal: 12 }}
           contentContainerStyle={{ paddingBottom: 110, paddingTop: 8, gap: 12 }}
-          renderItem={({ item, index }) => (
+          renderItem={({ item }) => (
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => router.push({ pathname: "/fichaproducto", params: { id: item.id } })}
               style={{ flex: 1, marginBottom: 12 }}
             >
-              <ProductCard product={item} highlight={index === 0} />
+              <ProductCard product={item} highlight={false} />
             </TouchableOpacity>
           )}
+          ListEmptyComponent={<Text style={{ textAlign: "center", marginTop: 40, color: "#999" }}>No se encontraron productos.</Text>}
+          ListFooterComponent={
+            products.length > 0 || page > 0 ? (
+              <View style={styles.pagination}>
+                <TouchableOpacity disabled={page === 0} onPress={prevPage} style={[styles.pageBtn, page === 0 && styles.disabledBtn]}>
+                  <Text style={styles.pageBtnText}>Anterior</Text>
+                </TouchableOpacity>
+                <Text style={styles.pageText}>Página {page + 1}</Text>
+                <TouchableOpacity disabled={products.length < PAGE_SIZE} onPress={nextPage} style={[styles.pageBtn, products.length < PAGE_SIZE && styles.disabledBtn]}>
+                  <Text style={styles.pageBtnText}>Siguiente</Text>
+                </TouchableOpacity>
+              </View>
+            ) : null
+          }
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -148,14 +181,6 @@ export default function ResultsScreen() {
   );
 }
 
-function FilterChip({ label }: { label: string }) {
-  return (
-    <View style={styles.chip}>
-      <Text style={styles.chipText}>{label}</Text>
-      <Text style={styles.chipX}>  ×</Text>
-    </View>
-  );
-}
 
 function ProductCard({ product, highlight }: { product: Product; highlight?: boolean }) {
   return (
@@ -318,5 +343,30 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat_400Regular",
     fontSize: 12,
     color: "#fff",
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+    gap: 20,
+  },
+  pageBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: TAUPE,
+    borderRadius: 8,
+  },
+  disabledBtn: {
+    backgroundColor: '#ccc',
+  },
+  pageBtnText: {
+    color: '#fff',
+    fontFamily: "Montserrat_600SemiBold",
+  },
+  pageText: {
+    fontFamily: "Montserrat_400Regular",
+    fontSize: 14,
+    color: "#333",
   },
 });

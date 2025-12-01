@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,20 +7,71 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const HISTORY_KEY = 'search_history';
 
 export default function SearchScreen() {
-  const data = useMemo(
-    () =>
-      Array.from({ length: 3 }).map((_, i) => ({
-        id: String(i + 1),
-        name: "CeraVe Moisturizer",
-        scannedAgo: "Scanned 2 hours ago",
-        rating: 4.5,
-      })),
-    []
-  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  // Load history on mount
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
+  const loadHistory = async () => {
+    try {
+      const history = await AsyncStorage.getItem(HISTORY_KEY);
+      if (history) {
+        setRecentSearches(JSON.parse(history));
+      }
+    } catch (e) {
+      console.error("Failed to load history", e);
+    }
+  };
+
+  const saveSearch = async () => {
+    if (!searchQuery.trim()) return;
+
+    try {
+      // Add new search to start, remove duplicates, keep max 10
+      const newHistory = [searchQuery, ...recentSearches.filter(s => s !== searchQuery)].slice(0, 10);
+      setRecentSearches(newHistory);
+      await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
+
+      // Navigate to results page
+      router.push({ pathname: "/resultados", params: { query: searchQuery } });
+      setSearchQuery("");
+    } catch (e) {
+      console.error("Failed to save history", e);
+    }
+  };
+
+  const onHistoryItemPress = (item: string) => {
+    router.push({ pathname: "/resultados", params: { query: item } });
+  };
+
+  const clearHistory = async () => {
+    try {
+      await AsyncStorage.removeItem(HISTORY_KEY);
+      setRecentSearches([]);
+    } catch (e) {
+      console.error("Failed to clear history", e);
+    }
+  };
+
+  const removeSearchItem = async (item: string) => {
+    try {
+      const newHistory = recentSearches.filter(s => s !== item);
+      setRecentSearches(newHistory);
+      await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
+    } catch (e) {
+      console.error("Failed to remove item", e);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -28,8 +79,8 @@ export default function SearchScreen() {
       <View style={styles.headerSpacer} />
 
       <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
+        data={[]} // No inline results
+        keyExtractor={(item) => item}
         ListHeaderComponent={
           <>
             {/* Search */}
@@ -37,6 +88,10 @@ export default function SearchScreen() {
               style={styles.searchInput}
               placeholder="Buscar"
               placeholderTextColor="#A6BCA6"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmitEditing={saveSearch}
+              returnKeyType="search"
             />
 
             {/* Scan card */}
@@ -53,27 +108,34 @@ export default function SearchScreen() {
             {/* Título sección */}
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Busquedas recientes</Text>
-              <TouchableOpacity>
-                <Text style={styles.seeAll}>Ver todos</Text>
-              </TouchableOpacity>
+              {recentSearches.length > 0 && (
+                <TouchableOpacity onPress={clearHistory}>
+                  <Text style={styles.seeAll}>Borrar todo</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Recent Searches List */}
+            <View style={{ marginTop: 10 }}>
+              {recentSearches.length === 0 ? (
+                <Text style={{ color: '#999', marginLeft: 10, marginBottom: 10 }}>No hay búsquedas recientes</Text>
+              ) : (
+                recentSearches.map((item, index) => (
+                  <TouchableOpacity key={index} style={styles.historyItem} onPress={() => onHistoryItemPress(item)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                      <Ionicons name="time-outline" size={20} color="#666" />
+                      <Text style={styles.historyText}>{item}</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => removeSearchItem(item)}>
+                      <Ionicons name="close" size={18} color="#999" />
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                ))
+              )}
             </View>
           </>
         }
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.resultCard}>
-            <View style={styles.resultLeft}>
-              <View style={styles.thumb} />
-              <View style={{ gap: 2 }}>
-                <Text style={styles.resultName}>{item.name}</Text>
-                <Text style={styles.resultAgo}>{item.scannedAgo}</Text>
-              </View>
-            </View>
-            <Text style={styles.resultRating}>
-              {String(item.rating).replace(".", ",")}
-            </Text>
-          </TouchableOpacity>
-        )}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        renderItem={null}
         contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       />
@@ -89,8 +151,8 @@ export default function SearchScreen() {
 
         <Link href="/buscar" asChild>
           <TouchableOpacity style={styles.tabItem}>
-            <Ionicons name="search-outline" size={22} color="#fff" />
-            <Text style={styles.tabLabel}>Buscar</Text>
+            <Ionicons name="search" size={22} color="#fff" />
+            <Text style={[styles.tabLabel, { fontWeight: "700" }]}>Buscar</Text>
           </TouchableOpacity>
         </Link>
 
@@ -113,7 +175,6 @@ export default function SearchScreen() {
 }
 
 const TAUPE = "#5b524b";
-const LIGHT_CARD = "#DCDCDC";
 const BORDER_GREEN = "#CDEACD";
 
 const styles = StyleSheet.create({
@@ -180,44 +241,6 @@ const styles = StyleSheet.create({
     color: "#3E3E3E",
   },
 
-  // Result card
-  resultCard: {
-    marginTop: 10,
-    backgroundColor: LIGHT_CARD,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  resultLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  thumb: {
-    width: 38,
-    height: 38,
-    borderRadius: 6,
-    backgroundColor: "#8A94A6",
-  },
-  resultName: {
-    fontFamily: "Montserrat_600SemiBold",
-    fontSize: 14,
-    color: "#1A1A1A",
-  },
-  resultAgo: {
-    fontFamily: "Montserrat_400Regular",
-    fontSize: 12,
-    color: "#444",
-  },
-  resultRating: {
-    fontFamily: "Montserrat_600SemiBold",
-    fontSize: 14,
-    color: "#4A4A4A",
-  },
-
   // Tabbar
   tabbar: {
     position: "absolute",
@@ -242,5 +265,19 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat_400Regular",
     fontSize: 12,
     color: "#fff",
+  },
+  historyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  historyText: {
+    fontFamily: "Montserrat_400Regular",
+    fontSize: 14,
+    color: "#333",
   },
 });

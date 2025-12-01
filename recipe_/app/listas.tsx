@@ -1,33 +1,137 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
-import { Link } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, Alert, ActivityIndicator } from "react-native";
+import { Link, router } from "expo-router";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { supabase } from "../utils/supabase";
 
 const TAUPE = "#5b524b";
 
+type Lista = {
+  id: string;
+  nombre: string;
+  created_at: string;
+};
+
 export default function ListsScreen() {
+  const [lists, setLists] = useState<Lista[]>([]);
+  const [newListName, setNewListName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [creating, setCreating] = useState(false);
+
+  useEffect(() => {
+    fetchLists();
+  }, []);
+
+  async function fetchLists() {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("Listas")
+      .select("*")
+      .eq("usuario_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      Alert.alert("Error", error.message);
+    } else {
+      setLists(data || []);
+    }
+    setLoading(false);
+  }
+
+  async function createList() {
+    if (!newListName.trim()) return;
+    setCreating(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      Alert.alert("Error", "Debes iniciar sesión");
+      setCreating(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("Listas")
+      .insert([{ nombre: newListName, usuario_id: user.id }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error creating list:", error);
+      Alert.alert("Error al crear lista", error.message + "\nCode: " + error.code);
+    } else if (data) {
+      console.log("List created:", data);
+      setLists([data, ...lists]);
+      setNewListName("");
+    }
+    setCreating(false);
+  }
+
+  async function deleteList(id: string) {
+    const { error } = await supabase.from("Listas").delete().eq("id", id);
+    if (error) {
+      Alert.alert("Error", error.message);
+    } else {
+      setLists(lists.filter((l) => l.id !== id));
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tus listas favoritas</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Shampoo</Text>
-        <Text style={styles.cardDesc}>Descripción</Text>
-        <AntDesign name="close" size={18} color="#000" style={styles.cardClose} />
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Gel</Text>
-        <Text style={styles.cardDesc}>Descripción</Text>
-        <AntDesign name="close" size={18} color="#000" style={styles.cardClose} />
-      </View>
+      {loading ? (
+        <ActivityIndicator size="large" color={TAUPE} />
+      ) : (
+        <FlatList
+          data={lists}
+          keyExtractor={(item) => item.id}
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          renderItem={({ item }) => (
+            <Link href={{ pathname: "/listas_2", params: { id: item.id, nombre: item.nombre } }} asChild>
+              <TouchableOpacity style={styles.card}>
+                <Text style={styles.cardTitle}>{item.nombre}</Text>
+                <Text style={styles.cardDesc}>Creada el {new Date(item.created_at).toLocaleDateString()}</Text>
+                <TouchableOpacity
+                  style={styles.cardClose}
+                  onPress={(e) => {
+                    e.stopPropagation(); // Prevent navigation when clicking delete
+                    Alert.alert("Eliminar lista", "¿Estás seguro?", [
+                      { text: "Cancelar", style: "cancel" },
+                      { text: "Eliminar", style: "destructive", onPress: () => deleteList(item.id) },
+                    ]);
+                  }}
+                >
+                  <AntDesign name="close" size={18} color="#000" />
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </Link>
+          )}
+          ListEmptyComponent={<Text style={{ textAlign: "center", color: "#999", marginTop: 20 }}>No tienes listas aún.</Text>}
+        />
+      )}
 
       {/* Campo para crear lista */}
       <View style={styles.inputRow}>
         <Text style={styles.inputLabel}>Nombre</Text>
-        <TextInput style={styles.input} placeholder="Skincare" />
-        <TouchableOpacity style={styles.createButton}>
-          <Text style={styles.createButtonText}>Crear Lista</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nueva lista..."
+          value={newListName}
+          onChangeText={setNewListName}
+        />
+        <TouchableOpacity style={styles.createButton} onPress={createList} disabled={creating}>
+          {creating ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.createButtonText}>Crear Lista</Text>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -106,7 +210,8 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 80, // Add space for tabbar
     gap: 8,
   },
   inputLabel: {
