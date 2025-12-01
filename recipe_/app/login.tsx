@@ -1,7 +1,28 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { Link, router } from "expo-router";
+import { useState } from "react";
+import { supabase } from "../utils/supabase";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function signInWithEmail() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      Alert.alert("Error", error.message);
+    } else {
+      router.replace("/home");
+    }
+    setLoading(false);
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.brandRow}>
@@ -20,6 +41,8 @@ export default function Login() {
             keyboardType="email-address"
             autoCapitalize="none"
             placeholderTextColor="#9B9B9B"
+            value={email}
+            onChangeText={setEmail}
           />
         </View>
 
@@ -30,14 +53,18 @@ export default function Login() {
             placeholder="password segura"
             secureTextEntry
             placeholderTextColor="#9B9B9B"
+            value={password}
+            onChangeText={setPassword}
           />
         </View>
 
-        <Link href="/home" asChild>
-          <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={signInWithEmail} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
             <Text style={styles.buttonText}>Ingresar</Text>
-          </TouchableOpacity>
-        </Link>
+          )}
+        </TouchableOpacity>
 
         <Link href="/forgot" asChild>
           <TouchableOpacity>

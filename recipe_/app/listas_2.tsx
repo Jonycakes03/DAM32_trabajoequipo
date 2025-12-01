@@ -1,78 +1,101 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from "react-native";
-import { Link } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Alert, ActivityIndicator } from "react-native";
+import { Link, useLocalSearchParams, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { supabase } from "../utils/supabase";
 
-export default function ListsScreen() {
-  const [name, setName] = useState('');
-  const [items, setItems] = useState([
-    { id: "1", title: "Head & Shoulders", desc: "Descripción" },
-    { id: "2", title: "Herbal Essences", desc: "Descripción" },
-    { id: "3", title: "Old Spice", desc: "Descripción" },
-  ]);
-
-  const removeItem = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
-  const addItem = () => {
-    if (!name.trim()) return;
-    setItems(prev => [{ id: Date.now().toString(), title: name.trim(), desc: "Descripción" }, ...prev]);
-    setName("");
+type ProductItem = {
+  id: string; // ListaProductos id
+  producto: {
+    id: string;
+    nombre: string;
+    marca: string;
+    // desc: string; // Assuming 'informacion' or similar
   };
+};
+
+export default function ListDetailsScreen() {
+  const { id, nombre } = useLocalSearchParams();
+  const [items, setItems] = useState<ProductItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) fetchListItems();
+  }, [id]);
+
+  async function fetchListItems() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("ListaProductos")
+      .select("id, producto:Productos(id, nombre, marca)")
+      .eq("lista_id", id);
+
+    if (error) {
+      Alert.alert("Error", error.message);
+    } else {
+      // @ts-ignore
+      setItems(data || []);
+    }
+    setLoading(false);
+  }
+
+  async function removeItem(itemId: string) {
+    const { error } = await supabase.from("ListaProductos").delete().eq("id", itemId);
+    if (error) {
+      Alert.alert("Error", error.message);
+    } else {
+      setItems(items.filter((i) => i.id !== itemId));
+    }
+  }
 
   return (
     <View style={styles.container}>
-      {}
+      { }
       <View style={styles.metaRow}>
         <Text style={styles.metaBrand}>CLEARLABEL</Text>
         <Ionicons name="mail-outline" size={18} color="#111" />
       </View>
 
-      {}
+      { }
       <View style={styles.headerRow}>
-        <Link href="/home" asChild>
-          <TouchableOpacity style={styles.backBtn}>
-            <Ionicons name="chevron-back" size={22} color="#111" />
-          </TouchableOpacity>
-        </Link>
-        <Text style={styles.headerTitle}>Shampoo</Text>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+          <Ionicons name="chevron-back" size={22} color="#111" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>{nombre || "Lista"}</Text>
         <View style={{ width: 22 }} />
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 140 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {}
-        {items.map(item => (
-          <View key={item.id} style={styles.card}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardDesc}>{item.desc}</Text>
-            </View>
-            <TouchableOpacity onPress={() => removeItem(item.id)} style={styles.closeBtn}>
-              <Ionicons name="close" size={20} color="#111" />
-            </TouchableOpacity>
-          </View>
-        ))}
+      {loading ? (
+        <ActivityIndicator size="large" color="#5b524b" style={{ marginTop: 20 }} />
+      ) : (
+        <ScrollView
+          contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 140 }}
+          showsVerticalScrollIndicator={false}
+        >
+          { }
+          {items.length === 0 ? (
+            <Text style={{ textAlign: "center", marginTop: 20, color: "#999" }}>
+              No hay productos en esta lista.
+            </Text>
+          ) : (
+            items.map((item) => (
+              <View key={item.id} style={styles.card}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.cardTitle}>{item.producto.nombre}</Text>
+                  <Text style={styles.cardDesc}>{item.producto.marca}</Text>
+                </View>
+                <TouchableOpacity onPress={() => removeItem(item.id)} style={styles.closeBtn}>
+                  <Ionicons name="close" size={20} color="#111" />
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
 
-        {}
-        <View style={{ marginTop: 8 }}>
-          <Text style={styles.inputLabel}>Nombre</Text>
-          <View style={styles.addRow}>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="Nombre"
-              style={styles.input}
-              placeholderTextColor="#7a7a7a"
-            />
-            <TouchableOpacity style={styles.addBtn} onPress={addItem}>
-              <Text style={styles.addText}>Agregar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
+          {/* Removed "Add" input for now as we add from Product Details */}
+        </ScrollView>
+      )}
 
-      {}
+      { }
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -81,14 +104,14 @@ export default function ListsScreen() {
           </TouchableOpacity>
         </Link>
 
-        <Link href="/search" asChild>
+        <Link href="/buscar" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="search-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Buscar</Text>
           </TouchableOpacity>
         </Link>
 
-        <Link href="/lists" asChild>
+        <Link href="/listas" asChild>
           <TouchableOpacity style={styles.tabItem}>
             {/* Corazón RELLENO para indicar tab activo */}
             <Ionicons name="heart" size={22} color="#fff" />
@@ -96,7 +119,7 @@ export default function ListsScreen() {
           </TouchableOpacity>
         </Link>
 
-        <Link href="/profile" asChild>
+        <Link href="/perfil" asChild>
           <TouchableOpacity style={styles.tabItem}>
             <Ionicons name="person-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Perfil</Text>
@@ -127,7 +150,7 @@ const styles = StyleSheet.create({
     color: "#111",
   },
 
- 
+
   headerRow: {
     marginTop: 6,
     paddingHorizontal: 16,
@@ -218,7 +241,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
 
-  
+
   tabbar: {
     position: "absolute",
     left: 12,

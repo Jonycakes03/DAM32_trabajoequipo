@@ -38,12 +38,12 @@ export default function Home() {
         <View style={styles.row}>
           <CardMini
             label="Filtro"
-            href="/filters"
+            href="/resultados"
             imageUri="https://images.ctfassets.net/6pezt69ih962/2m3yESxS6bG6g8j2vCwD3H/3a7c1f3ddf7b4f3e8c7a3bfa5d88a3e5/cerave.png"
           />
           <CardMini
             label="Busqueda"
-            href="/search"
+            href="/buscar"
             imageUri="https://images.ctfassets.net/6pezt69ih962/6n2V8Qqk2k7iC3rY7y7w2e/4b7c0d1b2f0e4a0bb5bfc5f2f2ef7a9d/tocobo.png"
           />
         </View>

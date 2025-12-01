@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Pressable } from "react-native";
-import { Link } from "expo-router";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Pressable, Alert, ActivityIndicator } from "react-native";
+import { Link, router } from "expo-router";
+import { supabase } from "../utils/supabase";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -8,6 +9,57 @@ export default function Register() {
   const [sex, setSex] = useState<"H" | "M" | "NB" | null>("H");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSignUp() {
+    if (!email || !password || !name || !birthdate) {
+      Alert.alert("Error", "Por favor completa todos los campos");
+      return;
+    }
+
+    setLoading(true);
+
+    // Convert DD/MM/YYYY to YYYY-MM-DD
+    const [day, month, year] = birthdate.split("/");
+    const formattedDate = `${year}-${month}-${day}`;
+
+    // Map sex to smallint
+    const sexMap: { [key: string]: number } = { "H": 1, "M": 2, "NB": 3 };
+    const sexValue = sex ? sexMap[sex] : null;
+
+    const { data: { session, user }, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      Alert.alert("Error", error.message);
+      setLoading(false);
+      return;
+    }
+
+    if (user) {
+      const { error: dbError } = await supabase
+        .from('Usuarios')
+        .insert([
+          {
+            id: user.id,
+            nombre: name,
+            fe_nac: formattedDate,
+            sexo: sexValue,
+            correo: email,
+          },
+        ]);
+
+      if (dbError) {
+        Alert.alert("Error al crear perfil", dbError.message);
+      } else {
+        Alert.alert("Éxito", "Cuenta creada correctamente. Por favor inicia sesión.");
+        router.replace("/login");
+      }
+    }
+    setLoading(false);
+  }
 
   return (
     <View style={styles.container}>
@@ -86,7 +138,7 @@ export default function Register() {
             onChangeText={setPassword}
           />
         </View>
-        
+
         <View style={styles.field}>
           <Text style={styles.label}>Confirmar Contraseña</Text>
           <TextInput
@@ -98,8 +150,12 @@ export default function Register() {
 
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Register</Text>
+        <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Registrarse</Text>
+          )}
         </TouchableOpacity>
       </View>
 
