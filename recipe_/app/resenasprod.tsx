@@ -100,7 +100,7 @@ export const ProductReviewsScreen: React.FC = () => {
                     {productId ? ` (Producto #${productId})` : ""}.
                 </Text>
 
-                {/* Filtros por tipo de piel */}
+                {/* Filtros tipo de piel */}
                 <View style={styles.filtersRow}>
                     <FilterChip
                         label="Todas"

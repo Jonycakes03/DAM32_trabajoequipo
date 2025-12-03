@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* HEADER */}
+        {/* Encabezado */}
         <View style={styles.headerBar}>
           <View style={styles.headerSide}>
             <View style={styles.brandBox}>
@@ -24,11 +24,11 @@ export default function Home() {
 
           <Text style={styles.headerTitle}>CLEARLABEL</Text>
 
-          {/* lado derecho vacío para centrar */}
+          {/* Espacio para centrar */}
           <View style={styles.headerSide} />
         </View>
 
-        {/* CONTENIDO */}
+        {/* Contenido */}
         <ScrollView
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
@@ -39,7 +39,7 @@ export default function Home() {
             personal para acceder a reseñas y valoraciones.
           </Text>
 
-          {/* CARD ESCANEAR */}
+          {/* Tarjeta escanear */}
           <Link href="/escanear" asChild>
             <TouchableOpacity style={styles.scanCard}>
               <View style={styles.scanIconWrapper}>
@@ -53,7 +53,7 @@ export default function Home() {
             </TouchableOpacity>
           </Link>
 
-          {/* FILTRO / BUSQUEDA (MISMAS RUTAS DEL ORIGINAL) */}
+          {/* Filtro / Búsqueda */}
           <View style={styles.row}>
             <CardMini
               label="Filtro"
@@ -75,7 +75,7 @@ export default function Home() {
             />
           </View>
 
-          {/* FEATURE (MISMO CONTENIDO DEL ORIGINAL) */}
+          {/* Destacado */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Recomendado para ti</Text>
 
@@ -98,7 +98,7 @@ export default function Home() {
         </ScrollView>
       </View>
 
-      {/* TABBAR (IGUAL QUE ORIGINAL) */}
+      {/* Barra inferior */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -156,7 +156,7 @@ function CardMini({
   );
 }
 
-/* --- Colores estilo “segundo diseño” --- */
+/* --- Colores --- */
 const BACKGROUND = "#FFFFFF";
 const HEADER_BG = "#F5F1ED";
 const CARD_BG = "#F5F1ED";
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80, // espacio para la tabbar flotante
   },
 
-  /* HEADER */
+  /* Encabezado */
   headerBar: {
     height: 64,
     backgroundColor: HEADER_BG,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
 
-  /* CONTENT */
+  /* Contenido */
   content: {
     paddingHorizontal: 20,
     paddingTop: 18,
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
-  /* SCAN CARD */
+  /* Tarjeta escanear */
   scanCard: {
     marginTop: 8,
     backgroundColor: CARD_BG,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  /* MINI CARDS */
+  /* Tarjetas mini */
   row: {
     flexDirection: "row",
     gap: 14,
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     lineHeight: 12,
   },
 
-  /* FEATURE */
+  /* Destacado */
   section: {
     marginTop: 4,
   },
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  /* TABBAR */
+  /* Barra inferior */
   tabbar: {
     position: "absolute",
     left: 12,

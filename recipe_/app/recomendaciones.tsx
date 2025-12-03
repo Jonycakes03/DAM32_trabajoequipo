@@ -12,9 +12,9 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { supabase } from "../utils/supabase";
 
-// IDs de productos recomendados (EDITAR AQUÍ)
+// IDs de productos recomendados
 const RECOMMENDED_IDS = [
-    "00b8f6ff-581b-4817-ac78-3bfcb9371520", // Reemplaza con IDs reales de tu base de datos
+    "00b8f6ff-581b-4817-ac78-3bfcb9371520", // Reemplazar con IDs reales
     "e99f9d9a-d0e8-41d7-847b-1ad1bb3873ee",
     "fac4c1af-5c3d-4998-af0c-fabe8e4dadb4"
 ];
@@ -24,7 +24,7 @@ type Product = {
     nombre: string;
     marca: string;
     valoracion: number;
-    tag?: "similar" | "safer"; // Opcional, ya que no viene de la BD por defecto
+    tag?: "similar" | "safer"; // Opcional, no viene de BD
 };
 
 type RouteParams = {
@@ -44,7 +44,7 @@ export const Recomendaciones: React.FC = () => {
 
     async function fetchRecommendations() {
         setLoading(true);
-        // Traer productos cuyos IDs estén en la lista RECOMMENDED_IDS
+        // Traer productos recomendados
         const { data, error } = await supabase
             .from("Productos")
             .select("id, nombre, marca, valoracion")
@@ -53,7 +53,7 @@ export const Recomendaciones: React.FC = () => {
         if (error) {
             console.error("Error fetching recommendations:", error);
         } else if (data) {
-            // Mapeamos para agregar un tag ficticio o lógica personalizada
+            // Mapear para agregar etiqueta ficticia
             const mapped = data.map((item: any, index: number) => ({
                 ...item,
                 tag: index % 2 === 0 ? "safer" : "similar", // Lógica de ejemplo

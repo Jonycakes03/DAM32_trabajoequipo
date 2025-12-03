@@ -32,11 +32,11 @@ export default function Register() {
 
     setLoading(true);
 
-    // Convert DD/MM/YYYY to YYYY-MM-DD
+    // Convertir DD/MM/AAAA a AAAA-MM-DD
     const [day, month, year] = birthdate.split("/");
     const formattedDate = `${year}-${month}-${day}`;
 
-    // Map sex to smallint
+    // Mapear sexo a entero
     const sexMap: { [key: string]: number } = { H: 1, M: 2, NB: 3 };
     const sexValue = sex ? sexMap[sex] : null;
 
@@ -88,7 +88,7 @@ export default function Register() {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-          {/* LOGO CENTRADO */}
+          {/* Logo centrado */}
           <View style={styles.logoContainer}>
             <Text style={styles.brand}>CLEARLABEL</Text>
             <View style={styles.brandBox}>
@@ -96,7 +96,7 @@ export default function Register() {
             </View>
           </View>
 
-          {/* CARD PRINCIPAL */}
+          {/* Tarjeta principal */}
           <View style={styles.card}>
             <Text style={styles.title}>Crear cuenta</Text>
             <Text style={styles.description}>
@@ -229,7 +229,7 @@ function CheckRow({
   );
 }
 
-/* PALETA Y ESTILOS (diseño del segundo código) */
+/* Paleta y estilos */
 const BACKGROUND = "#FFFFFF";
 const CARD_BG = "#F5F1ED";
 const TEXT_MAIN = "#3B302A";
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  /* LOGO */
+  /* Logo */
   logoContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  /* CARD */
+  /* Tarjeta */
   card: {
     width: "100%",
     alignSelf: "center",
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  /* CHECKBOXES */
+  /* Casillas de verificación */
   checkRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  /* BOTONES */
+  /* Botones */
   primaryButton: {
     marginTop: 10,
     backgroundColor: ACCENT,

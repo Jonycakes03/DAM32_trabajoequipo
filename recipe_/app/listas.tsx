@@ -101,7 +101,7 @@ export default function ListsScreen() {
                 <TouchableOpacity
                   style={styles.cardClose}
                   onPress={(e) => {
-                    e.stopPropagation(); // Prevent navigation when clicking delete
+                    e.stopPropagation(); // Evitar navegación al eliminar
                     Alert.alert("Eliminar lista", "¿Estás seguro?", [
                       { text: "Cancelar", style: "cancel" },
                       { text: "Eliminar", style: "destructive", onPress: () => deleteList(item.id) },
@@ -117,7 +117,7 @@ export default function ListsScreen() {
         />
       )}
 
-      {/* Campo para crear lista */}
+      {/* Crear lista */}
       <View style={styles.inputRow}>
         <Text style={styles.inputLabel}>Nombre</Text>
         <TextInput
@@ -135,7 +135,7 @@ export default function ListsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Tabbar */}
+      {/* Barra inferior */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -153,7 +153,7 @@ export default function ListsScreen() {
 
         <Link href="/listas" asChild>
           <TouchableOpacity style={styles.tabItem}>
-            {/* Corazón relleno porque estamos en esta pantalla */}
+            {/* Corazón relleno */}
             <AntDesign name="heart" size={22} color="#fff" />
             <Text style={[styles.tabLabel, { fontWeight: "700" }]}>Listas</Text>
           </TouchableOpacity>
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 10,
-    marginBottom: 80, // Add space for tabbar
+    marginBottom: 80, // Espacio para barra inferior
     gap: 8,
   },
   inputLabel: {

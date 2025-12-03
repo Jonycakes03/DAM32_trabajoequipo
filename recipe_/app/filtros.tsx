@@ -25,7 +25,7 @@ const INGREDIENTS = [
 
 const BRANDS = ["Nivea", "Head & Shoulders", "Pantene", "COSRX"];
 
-/* ---------- UI Helpers (solo diseño) ---------- */
+/* ---------- Ayudantes UI ---------- */
 const TAUPE = "#5b524b";
 const MINT = "#30C06A";
 const BORDER = "#E6E6E6";
@@ -75,7 +75,7 @@ function Section({ title, children, right }: SectionProps) {
     );
 }
 
-/* ---------- Screen ---------- */
+/* ---------- Pantalla ---------- */
 export default function FiltersScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
@@ -116,7 +116,7 @@ export default function FiltersScreen() {
         router.push({
             pathname: "/resultados",
             params: {
-                query: params.query, // Keep the original search query
+                query: params.query, // Mantener consulta original
                 rating: selectedRating,
                 ingredients: selectedIngredients.join(","),
                 brand: selectedBrands.join(","),
@@ -129,7 +129,7 @@ export default function FiltersScreen() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                {/* Header (estilo del segundo) */}
+                {/* Encabezado */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
                         <Ionicons name="chevron-back" size={22} color={TAUPE} />
@@ -207,7 +207,7 @@ export default function FiltersScreen() {
                     </Section>
                 </ScrollView>
 
-                {/* Footer fijo (estilo del segundo) */}
+                {/* Pie de página fijo */}
                 <View style={styles.footer}>
                     <TouchableOpacity onPress={reset} style={[styles.footerBtn, styles.footerGhost]}>
                         <Text style={[styles.footerBtnText, { color: TAUPE }]}>Restablecer</Text>
@@ -222,7 +222,7 @@ export default function FiltersScreen() {
     );
 }
 
-/* ---------- Styles (del segundo diseño) ---------- */
+/* ---------- Estilos ---------- */
 const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: "#fff" },
     container: { flex: 1, backgroundColor: "#fff" },
