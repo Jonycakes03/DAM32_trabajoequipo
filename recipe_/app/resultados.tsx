@@ -184,7 +184,7 @@ export default function ResultsScreen() {
 
 function ProductCard({ product, highlight }: { product: Product; highlight?: boolean }) {
   return (
-    <TouchableOpacity activeOpacity={0.9} style={[styles.card, highlight && styles.cardHighlight]}>
+    <View style={[styles.card, highlight && styles.cardHighlight]}>
       {/* Image area */}
       <View style={[styles.imageBox, highlight && styles.imageHighlight]}>
         {product.imagen ? (
@@ -208,7 +208,7 @@ function ProductCard({ product, highlight }: { product: Product; highlight?: boo
           {product.nombre}
         </Text>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 }
 
