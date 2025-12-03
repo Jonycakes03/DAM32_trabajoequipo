@@ -1,11 +1,72 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 import { Link, router } from "expo-router";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../utils/supabase";
 
 const TAUPE = "#5b524b";
+const CARD_BG = "#f7f5f3";
 const AVATAR = "#B7A9AB";
+
+const Row = ({
+  icon,
+  label,
+  href,
+  rightText,
+  onPress,
+  loading,
+}: {
+  icon: any;
+  label: string;
+  href?: any;
+  rightText?: string;
+  onPress?: () => void;
+  loading?: boolean;
+}) => {
+  const content = (
+    <View style={styles.row}>
+      <View style={styles.rowLeft}>
+        <Ionicons
+          name={icon}
+          size={18}
+          color={TAUPE}
+          style={{ marginRight: 8 }}
+        />
+        <Text style={styles.rowText}>{label}</Text>
+      </View>
+
+      {loading ? (
+        <ActivityIndicator size="small" color={TAUPE} />
+      ) : rightText ? (
+        <Text style={styles.rowRightText}>{rightText}</Text>
+      ) : (
+        <Ionicons name="chevron-forward" size={18} color={TAUPE} />
+      )}
+    </View>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} asChild>
+        <TouchableOpacity>{content}</TouchableOpacity>
+      </Link>
+    );
+  }
+
+  if (onPress) {
+    return <TouchableOpacity onPress={onPress}>{content}</TouchableOpacity>;
+  }
+
+  return <View>{content}</View>;
+};
 
 export default function ProfileScreen() {
   const [name, setName] = useState("Usuario");
@@ -17,7 +78,9 @@ export default function ProfileScreen() {
 
   async function fetchProfile() {
     console.log("Fetching profile...");
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     console.log("User:", user?.id);
 
     if (user) {
@@ -52,35 +115,60 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.headerSpacer} />
+      {/* Header ClearLabel (UI del 2do) */}
+      <View style={styles.header}>
+        <Text style={styles.brand}>CLEARLABEL</Text>
+        <Ionicons name="mail-outline" size={20} color={TAUPE} />
+      </View>
 
-      {/* Perfil */}
-      <View style={styles.headerRow}>
-        <View style={styles.avatar} />
-        <View>
-          {loading ? (
-            <ActivityIndicator size="small" color={TAUPE} />
-          ) : (
-            <Text style={styles.name}>{name}</Text>
-          )}
-          <Text style={styles.subtext}>Ver perfil</Text>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Título */}
+        <Text style={styles.title}>Perfil</Text>
+
+        {/* Banner (UI del 2do) */}
+        <View style={styles.banner}>
+          <View style={styles.bannerTop}>
+            <View style={styles.avatar} />
+            <View style={{ flex: 1 }}>
+              {loading ? (
+                <ActivityIndicator size="small" color={TAUPE} />
+              ) : (
+                <Text style={styles.bannerName}>{name}</Text>
+              )}
+              <Text style={styles.bannerText}>
+                Administra tus preferencias y tu cuenta en ClearLabel.
+              </Text>
+            </View>
+          </View>
         </View>
-      </View>
 
-      {/* Opciones */}
-      <View style={styles.menu}>
-        <MenuItem label="Ajustes" href="/settings" />
-        <MenuItem label="Historial" href="/history" />
-        <MenuItem label="Reestablecer contraseña" href="/reset-password" />
-        <MenuItem label="Preferencias" href="/preferences" />
-        <MenuItem label="Mis Reseñas" href="/mis_resenas" />
-        <TouchableOpacity onPress={onSignOut} style={styles.menuRow}>
-          <Text style={styles.menuText}>Cerrar sesión</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Card: opciones (mismas rutas del original) */}
+        <View style={styles.card}>
+          <Row icon="settings-outline" label="Ajustes" href="/settings" />
+          <View style={styles.divider} />
+          <Row
+            icon="lock-closed-outline"
+            label="Reestablecer contraseña"
+            href="/reset-password"
+          />
+          <View style={styles.divider} />
+          <Row icon="star-outline" label="Mis Reseñas" href="/mis_resenas" />
+        </View>
 
-      {/* Tabbar */}
+        {/* Card: cerrar sesión (misma acción del original) */}
+        <View style={styles.card}>
+          <Row
+            icon="log-out-outline"
+            label="Cerrar sesión"
+            onPress={onSignOut}
+          />
+        </View>
+
+        {/* espacio para que no tape la tabbar */}
+        <View style={{ height: 90 }} />
+      </ScrollView>
+
+      {/* Tabbar (igual que tu original) */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -98,7 +186,6 @@ export default function ProfileScreen() {
 
         <Link href="/listas" asChild>
           <TouchableOpacity style={styles.tabItem}>
-            {/* Corazón solo con contorno */}
             <Ionicons name="heart-outline" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Listas</Text>
           </TouchableOpacity>
@@ -106,7 +193,6 @@ export default function ProfileScreen() {
 
         <Link href="/perfil" asChild>
           <TouchableOpacity style={styles.tabItem}>
-            {/* Ícono relleno ya que estamos en perfil */}
             <Ionicons name="person" size={22} color="#fff" />
             <Text style={[styles.tabLabel, { fontWeight: "700" }]}>Perfil</Text>
           </TouchableOpacity>
@@ -116,60 +202,101 @@ export default function ProfileScreen() {
   );
 }
 
-function MenuItem({ label, href }: { label: string; href: any }) {
-  return (
-    <Link href={href} asChild>
-      <TouchableOpacity style={styles.menuRow}>
-        <Text style={styles.menuText}>{label}</Text>
-        <Ionicons name="chevron-forward" size={20} color="#ccc" />
-      </TouchableOpacity>
-    </Link>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  headerSpacer: { height: 16, backgroundColor: "#EFEFEF" },
+  container: { flex: 1, backgroundColor: "#ffffff" },
 
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    paddingHorizontal: 18,
-    paddingVertical: 20,
-  },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: AVATAR,
-  },
-  name: {
-    fontFamily: "Montserrat_700Bold",
-    fontSize: 18,
-    color: "#6B6B6B",
-  },
-  subtext: {
-    fontFamily: "Montserrat_400Regular",
-    fontSize: 12,
-    color: "#999",
-  },
-
-  menu: { paddingHorizontal: 24, gap: 10, marginTop: 10 },
-  menuRow: {
-    paddingVertical: 12,
+  /* Header del 2do */
+  header: {
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0"
+    backgroundColor: "#f0eeeb",
   },
-  menuText: {
-    fontFamily: "Montserrat_500Medium",
+  brand: {
     fontSize: 16,
-    color: "#6B6B6B",
+    letterSpacing: 1,
+    color: TAUPE,
+    fontWeight: "600",
   },
 
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
+  },
+
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: TAUPE,
+    marginBottom: 16,
+  },
+
+  /* Banner inspirado en el 2do */
+  banner: {
+    backgroundColor: "#fbeee3",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+  },
+  bannerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  avatar: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: AVATAR,
+  },
+  bannerName: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: TAUPE,
+    marginBottom: 4,
+  },
+  bannerText: {
+    fontSize: 12,
+    color: "#6a625c",
+    lineHeight: 16,
+  },
+
+  /* Cards + rows del 2do */
+  card: {
+    backgroundColor: CARD_BG,
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginBottom: 16,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    justifyContent: "space-between",
+  },
+  rowLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rowText: {
+    fontSize: 14,
+    color: TAUPE,
+  },
+  rowRightText: {
+    fontSize: 12,
+    color: "#6a625c",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#e2ddd7",
+  },
+
+  /* Tabbar (tu original) */
   tabbar: {
     position: "absolute",
     left: 12,

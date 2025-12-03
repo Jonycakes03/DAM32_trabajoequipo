@@ -14,7 +14,8 @@ export default function Page() {
     { name: "Detalles de Lista", path: "/listas_2" },
     { name: "Resultados", path: "/resultados" },
     { name: "Ficha de Producto", path: "/fichaproducto" },
-    {name: "Prueba db", path: "/dbtest"},
+    { name: "Prueba db", path: "/dbtest" },
+    { name: "Bienvenida", path: "/bienvenida" },
   ];
 
   return (
@@ -22,7 +23,7 @@ export default function Page() {
       <View style={styles.content}>
         <Text style={styles.title}>Recipe App - Pages</Text>
         <Text style={styles.subtitle}>Selecciona una página para visualizar</Text>
-        
+
         <View style={styles.linksContainer}>
           {pages.map((page) => (
             <TouchableOpacity
