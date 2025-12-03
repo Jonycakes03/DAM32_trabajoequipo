@@ -5,12 +5,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../utils/supabase";
 
 type ProductItem = {
-  id: string; // ListaProductos id
+  id: string; // ID ListaProductos
   producto: {
     id: string;
     nombre: string;
     marca: string;
-    // desc: string; // Assuming 'informacion' or similar
+    // Asumiendo 'informacion' o similar
   };
 };
 
@@ -91,7 +91,7 @@ export default function ListDetailsScreen() {
             ))
           )}
 
-          {/* Removed "Add" input for now as we add from Product Details */}
+          {/* Entrada "Agregar" eliminada */}
         </ScrollView>
       )}
 
@@ -113,7 +113,7 @@ export default function ListDetailsScreen() {
 
         <Link href="/listas" asChild>
           <TouchableOpacity style={styles.tabItem}>
-            {/* Corazón RELLENO para indicar tab activo */}
+            {/* Corazón relleno */}
             <Ionicons name="heart" size={22} color="#fff" />
             <Text style={styles.tabLabel}>Listas</Text>
           </TouchableOpacity>

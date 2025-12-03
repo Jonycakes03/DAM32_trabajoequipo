@@ -40,7 +40,7 @@ export default function Login() {
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        {/* Logo en el centro */}
+        {/* Logo centrado */}
         <View style={styles.logoContainer}>
           <Text style={styles.brand}>CLEARLABEL</Text>
           <View style={styles.brandBox}>
@@ -48,7 +48,7 @@ export default function Login() {
           </View>
         </View>
 
-        {/* Card principal */}
+        {/* Tarjeta principal */}
         <View style={styles.card}>
           <Text style={styles.title}>Iniciar sesión</Text>
           <Text style={styles.description}>
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
 
-  /* LOGO */
+  /* Logo */
   logoContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  /* CARD */
+  /* Tarjeta */
   card: {
     width: "100%",
     backgroundColor: CARD_BG,
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
-  /* BOTONES */
+  /* Botones */
   primaryButton: {
     marginTop: 10,
     backgroundColor: ACCENT,

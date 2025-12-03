@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-// 1. Import the supabase client from your utility file
-import { supabase } from '../utils/supabase'; // Adjust the path as necessary
+// 1. Importar cliente supabase
+import { supabase } from '../utils/supabase'; // Ajustar ruta si es necesario
 
-// Define the type for your product data for TypeScript safety
+// Definir tipo de producto
 interface Producto {
   id: string;
   nombre: string;
   marca: string;
   valoracion: number | null;
-  // You can include other columns here like imagen, ingredientes, etc.
+  // Incluir otras columnas si es necesario
 }
 
 const ProductsScreen = () => {
@@ -18,13 +18,13 @@ const ProductsScreen = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Define the async function to fetch the data
+    // Función asíncrona para obtener datos
     async function fetchProducts() {
-      // 2. The core database query: .from('TableName').select('ColumnsToRetrieve')
+      // 2. Consulta a la base de datos
       const { data, error } = await supabase
         .from('Productos')
-        .select('id, nombre, marca, valoracion') // Specify the columns you want
-        .order('nombre', { ascending: true }); // Optional: order the results
+        .select('id, nombre, marca, valoracion') // Especificar columnas
+        .order('nombre', { ascending: true }); // Opcional: ordenar resultados
 
       if (error) {
         console.error('Error fetching products:', error);
@@ -33,7 +33,7 @@ const ProductsScreen = () => {
         return;
       }
 
-      // 3. Store the fetched data and finish loading
+      // 3. Guardar datos y finalizar carga
       if (data) {
         setProducts(data as Producto[]);
         setError(null);
@@ -42,9 +42,9 @@ const ProductsScreen = () => {
     }
 
     fetchProducts();
-  }, []); // Empty dependency array means this runs only once on mount
+  }, []); // Ejecutar solo al montar
 
-  // --- Rendering Logic ---
+  // --- Lógica de renderizado ---
 
   if (loading) {
     return (

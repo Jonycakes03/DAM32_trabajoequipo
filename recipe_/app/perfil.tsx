@@ -115,7 +115,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header ClearLabel (UI del 2do) */}
+      {/* Encabezado ClearLabel */}
       <View style={styles.header}>
         <Text style={styles.brand}>CLEARLABEL</Text>
         <Ionicons name="mail-outline" size={20} color={TAUPE} />
@@ -125,7 +125,7 @@ export default function ProfileScreen() {
         {/* Título */}
         <Text style={styles.title}>Perfil</Text>
 
-        {/* Banner (UI del 2do) */}
+        {/* Banner */}
         <View style={styles.banner}>
           <View style={styles.bannerTop}>
             <View style={styles.avatar} />
@@ -142,7 +142,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Card: opciones (mismas rutas del original) */}
+        {/* Tarjeta opciones */}
         <View style={styles.card}>
           <Row icon="settings-outline" label="Ajustes" href="/settings" />
           <View style={styles.divider} />
@@ -155,7 +155,7 @@ export default function ProfileScreen() {
           <Row icon="star-outline" label="Mis Reseñas" href="/mis_resenas" />
         </View>
 
-        {/* Card: cerrar sesión (misma acción del original) */}
+        {/* Tarjeta cerrar sesión */}
         <View style={styles.card}>
           <Row
             icon="log-out-outline"
@@ -164,11 +164,11 @@ export default function ProfileScreen() {
           />
         </View>
 
-        {/* espacio para que no tape la tabbar */}
+        {/* Espacio para barra inferior */}
         <View style={{ height: 90 }} />
       </ScrollView>
 
-      {/* Tabbar (igual que tu original) */}
+      {/* Barra inferior */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -205,7 +205,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#ffffff" },
 
-  /* Header del 2do */
+  /* Encabezado */
   header: {
     paddingTop: 50,
     paddingHorizontal: 20,
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  /* Banner inspirado en el 2do */
+  /* Banner */
   banner: {
     backgroundColor: "#fbeee3",
     borderRadius: 16,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
 
-  /* Cards + rows del 2do */
+  /* Tarjetas y filas */
   card: {
     backgroundColor: CARD_BG,
     borderRadius: 18,
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e2ddd7",
   },
 
-  /* Tabbar (tu original) */
+  /* Barra inferior */
   tabbar: {
     position: "absolute",
     left: 12,

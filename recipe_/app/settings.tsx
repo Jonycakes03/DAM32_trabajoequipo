@@ -126,13 +126,13 @@ export default function SettingsScreen() {
 
         if (!user) return;
 
-        // 1. Delete reviews (manual cascade if needed)
+        // 1. Eliminar reseñas (cascada manual)
         await supabase.from("Resenas").delete().eq("usuario_id", user.id);
 
-        // 2. Delete lists (manual cascade if needed)
+        // 2. Eliminar listas (cascada manual)
         await supabase.from("Listas").delete().eq("usuario_id", user.id);
 
-        // 3. Delete profile
+        // 3. Eliminar perfil
         const { error: profileError } = await supabase
             .from("Usuarios")
             .delete()
@@ -144,7 +144,7 @@ export default function SettingsScreen() {
             return;
         }
 
-        // 4. Sign out
+        // 4. Cerrar sesión
         await supabase.auth.signOut();
 
         Alert.alert("Cuenta eliminada", "Tu cuenta ha sido eliminada correctamente.");
@@ -165,7 +165,7 @@ export default function SettingsScreen() {
                 <ActivityIndicator size="large" color={TAUPE} style={{ marginTop: 40 }} />
             ) : (
                 <ScrollView contentContainerStyle={styles.content}>
-                    {/* Section: Profile */}
+                    {/* Sección: Perfil */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Perfil</Text>
                         <Text style={styles.label}>Nombre</Text>
@@ -189,7 +189,7 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Section: Data Management */}
+                    {/* Sección: Gestión de datos */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Datos</Text>
                         <Text style={styles.description}>
@@ -205,7 +205,7 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Section: Danger Zone */}
+                    {/* Sección: Zona de peligro */}
                     <View style={[styles.section, styles.dangerSection]}>
                         <Text style={[styles.sectionTitle, { color: DANGER }]}>Zona de Peligro</Text>
                         <Text style={styles.description}>

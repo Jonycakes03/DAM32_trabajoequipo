@@ -18,7 +18,7 @@ export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  // Load history on mount
+  // Cargar historial al montar
   useEffect(() => {
     loadHistory();
   }, []);
@@ -36,7 +36,7 @@ export default function SearchScreen() {
     if (!searchQuery.trim()) return;
 
     try {
-      // Add new search to start, remove duplicates, keep max 10
+      // Agregar búsqueda al inicio, sin duplicados, máx 10
       const newHistory = [
         searchQuery,
         ...recentSearches.filter((s) => s !== searchQuery),
@@ -45,7 +45,7 @@ export default function SearchScreen() {
       setRecentSearches(newHistory);
       await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory));
 
-      // Navigate to results page
+      // Ir a resultados
       router.push({ pathname: "/resultados", params: { query: searchQuery } });
       setSearchQuery("");
     } catch (e) {
@@ -79,7 +79,7 @@ export default function SearchScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* HEADER CON LOGO */}
+        {/* Encabezado con logo */}
         <View style={styles.headerBar}>
           <View style={styles.headerSide}>
             <View style={styles.brandBox}>
@@ -92,7 +92,7 @@ export default function SearchScreen() {
           <View style={styles.headerSide} />
         </View>
 
-        {/* CONTENIDO */}
+        {/* Contenido */}
         <FlatList
           data={[]}
           keyExtractor={(item) => item}
@@ -105,7 +105,7 @@ export default function SearchScreen() {
                 Encuentra productos por nombre o escaneando su código de barras.
               </Text>
 
-              {/* BUSCADOR (mantiene tu lógica: setSearchQuery + onSubmitEditing saveSearch) */}
+              {/* Buscador */}
               <View style={styles.searchWrapper}>
                 <Feather
                   name="search"
@@ -124,7 +124,7 @@ export default function SearchScreen() {
                 />
               </View>
 
-              {/* CARD ESCANEAR (MISMA RUTA ORIGINAL: /escanear) */}
+              {/* Tarjeta escanear */}
               <Link href="/escanear" asChild>
                 <TouchableOpacity style={styles.scanCard}>
                   <View style={styles.scanIconWrapper}>
@@ -140,7 +140,7 @@ export default function SearchScreen() {
                 </TouchableOpacity>
               </Link>
 
-              {/* ENCABEZADO DE RECIENTES (mantiene tu acción "Borrar todo") */}
+              {/* Encabezado recientes */}
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Búsquedas recientes</Text>
                 {recentSearches.length > 0 && (
@@ -150,7 +150,7 @@ export default function SearchScreen() {
                 )}
               </View>
 
-              {/* LISTA DE HISTORIAL (misma lógica) */}
+              {/* Lista historial */}
               <View style={{ marginTop: 2 }}>
                 {recentSearches.length === 0 ? (
                   <Text style={styles.emptyText}>No hay búsquedas recientes</Text>
@@ -188,7 +188,7 @@ export default function SearchScreen() {
         />
       </View>
 
-      {/* TABBAR INFERIOR (igual que tu original) */}
+      {/* Barra inferior */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -222,7 +222,7 @@ export default function SearchScreen() {
   );
 }
 
-/* ---------- Colores (del 2° diseño) ---------- */
+/* ---------- Colores ---------- */
 const BACKGROUND = "#FFFFFF";
 const HEADER_BG = "#F5F1ED";
 const CARD_BG = "#F5F1ED";
@@ -231,7 +231,7 @@ const TEXT_MAIN = "#3B302A";
 const TEXT_MUTED = "#8A7C73";
 const TAUPE = "#5B524B";
 
-/* ---------- Styles (UI del 2° diseño) ---------- */
+/* ---------- Estilos ---------- */
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     backgroundColor: BACKGROUND,
   },
 
-  /* HEADER CON LOGO */
+  /* Encabezado */
   headerBar: {
     height: 64,
     backgroundColor: HEADER_BG,
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
 
-  /* CONTENIDO LISTA */
+  /* Contenido lista */
   listContent: {
     paddingHorizontal: 20,
     paddingTop: 18,
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
 
-  /* BUSCADOR */
+  /* Buscador */
   searchWrapper: {
     flexDirection: "row",
     alignItems: "center",
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     color: TEXT_MAIN,
   },
 
-  /* CARD ESCANEAR */
+  /* Tarjeta escanear */
   scanCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  /* CABECERA RECIENTES */
+  /* Cabecera recientes */
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     color: ACCENT,
   },
 
-  /* HISTORIAL (adaptado al look del 2° diseño) */
+  /* Historial */
   emptyText: {
     color: TEXT_MUTED,
     fontSize: 13,
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  /* TABBAR (del 2° diseño) */
+  /* Barra inferior */
   tabbar: {
     position: "absolute",
     left: 12,

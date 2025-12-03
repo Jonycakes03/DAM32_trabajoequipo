@@ -152,7 +152,7 @@ export default function ProductScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* HEADER CON LOGO (UI del segundo) */}
+        {/* Encabezado con logo */}
         <View style={styles.headerBar}>
           <View style={styles.headerSide}>
             <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
@@ -166,7 +166,7 @@ export default function ProductScreen() {
         </View>
 
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          {/* TITULOS (UI del segundo) */}
+          {/* Títulos */}
           <Text style={styles.pageTitle}>Detalle de producto</Text>
           <Text style={styles.pageSubtitle}>
             Revisa la seguridad, ingredientes y reseñas de este producto.
@@ -176,7 +176,7 @@ export default function ProductScreen() {
             <ActivityIndicator size="large" color={TAUPE} style={{ marginTop: 40 }} />
           ) : product ? (
             <>
-              {/* IMAGEN */}
+              {/* Imagen */}
               <View style={styles.imagePlaceholder}>
                 {product.imagen ? (
                   <Image
@@ -189,17 +189,17 @@ export default function ProductScreen() {
                 )}
               </View>
 
-              {/* CARD PRINCIPAL */}
+              {/* Tarjeta principal */}
               <View style={styles.card}>
                 <Text style={styles.title}>{product.nombre}</Text>
                 <Text style={styles.sub}>Marca: {product.marca}</Text>
 
-                {/* Valoración de la BD */}
+                {/* Valoración BD */}
                 {product.valoracion !== undefined && (
                   <Text style={styles.smallMuted}>Valoración: {product.valoracion}</Text>
                 )}
 
-                {/* Calificación promedio calculada */}
+                {/* Calificación promedio */}
                 {(() => {
                   const avg =
                     reviews.length > 0
@@ -218,7 +218,7 @@ export default function ProductScreen() {
                 })()}
               </View>
 
-              {/* CARD “AÑADIR A LISTAS” (UI del segundo) */}
+              {/* Tarjeta añadir a listas */}
               <View style={styles.favoriteCard}>
                 <View style={{ flex: 1, paddingRight: 10 }}>
                   <Text style={styles.favoriteTitle}>Añadir a listas</Text>
@@ -233,19 +233,19 @@ export default function ProductScreen() {
                 </TouchableOpacity>
               </View>
 
-              {/* INGREDIENTES */}
+              {/* Ingredientes */}
               <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Ingredientes</Text>
                 <Text style={styles.bodyText}>{product.ingredientes}</Text>
               </View>
 
-              {/* INFORMACIÓN */}
+              {/* Información */}
               <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Información</Text>
                 <Text style={styles.bodyText}>{product.informacion}</Text>
               </View>
 
-              {/* RESEÑAS */}
+              {/* Reseñas */}
               <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Reseñas</Text>
 
@@ -270,7 +270,7 @@ export default function ProductScreen() {
                   ))
                 )}
 
-                {/* AGREGAR RESEÑA */}
+                {/* Agregar reseña */}
                 <View style={styles.addReviewBox}>
                   <Text style={styles.addReviewTitle}>Agregar reseña</Text>
 
@@ -314,7 +314,7 @@ export default function ProductScreen() {
         </ScrollView>
       </View>
 
-      {/* MODAL LISTAS (misma funcionalidad, UI más clean) */}
+      {/* Modal listas */}
       <Modal
         animationType="slide"
         transparent
@@ -344,7 +344,7 @@ export default function ProductScreen() {
         </View>
       </Modal>
 
-      {/* TABBAR (igual que original) */}
+      {/* Barra inferior */}
       <View style={styles.tabbar}>
         <Link href="/home" asChild>
           <TouchableOpacity style={styles.tabItem}>
@@ -378,7 +378,7 @@ export default function ProductScreen() {
   );
 }
 
-/* ---------- Componentitos UI (solo presentación) ---------- */
+/* ---------- Componentes UI ---------- */
 function OutlineBtn({ label }: { label: string }) {
   return (
     <TouchableOpacity style={styles.outlineBtn} activeOpacity={0.85}>
@@ -387,12 +387,12 @@ function OutlineBtn({ label }: { label: string }) {
   );
 }
 
-/* ---------- Estilos (del segundo diseño) ---------- */
+/* ---------- Estilos ---------- */
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: BACKGROUND },
   container: { flex: 1, backgroundColor: BACKGROUND, paddingBottom: 80 },
 
-  /* HEADER */
+  /* Encabezado */
   headerBar: {
     height: 64,
     backgroundColor: HEADER_BG,
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   scoreLeft: { fontSize: 13, color: "#6E6E6E" },
   scoreRight: { fontSize: 15, fontWeight: "700", color: "#4F4F4F" },
 
-  /* “FAVORITOS” */
+  /* Favoritos */
   favoriteCard: {
     backgroundColor: CARD_BG,
     borderRadius: 16,
@@ -505,7 +505,7 @@ const styles = StyleSheet.create({
   },
   favoriteButtonText: { fontSize: 12, fontWeight: "600", color: "#FFFFFF" },
 
-  /* Tabs visuals */
+  /* Visuales de pestañas */
   tabButtons: { flexDirection: "row", gap: 10, marginBottom: 14 },
   outlineBtn: {
     flex: 1,
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 15, fontWeight: "600", color: TEXT_MAIN, marginBottom: 8 },
   bodyText: { marginTop: 2, fontSize: 13, color: "#444", lineHeight: 18 },
 
-  /* Reviews */
+  /* Reseñas */
   emptyText: { color: TEXT_MUTED, marginVertical: 10, fontSize: 13 },
   reviewCard: {
     backgroundColor: "#F3F0ED",
@@ -597,7 +597,7 @@ const styles = StyleSheet.create({
   modalClose: { marginTop: 14, alignItems: "center" },
   modalCloseText: { color: TAUPE, fontSize: 14, fontWeight: "600", textDecorationLine: "underline" },
 
-  /* Tabbar (tu original) */
+  /* Barra inferior */
   tabbar: {
     position: "absolute",
     left: 12,

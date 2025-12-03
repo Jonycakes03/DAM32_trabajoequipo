@@ -9,10 +9,10 @@ export default function RootLayout() {
   const segments = useSegments();
 
   useEffect(() => {
-    // Check session on mount
+    // Verificar sesión al montar
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        // If no session, ensure we are on a public route
+        // Si no hay sesión, asegurar ruta pública
         const active = segments.length > 0 ? segments[segments.length - 1] : "index";
         const publicRoutes = ["index", "bienvenida", "login", "crearcuenta", "forgot", "reset-password"];
         if (!publicRoutes.includes(active)) {
@@ -21,16 +21,16 @@ export default function RootLayout() {
       }
     });
 
-    // Listen for auth changes
+    // Escuchar cambios de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const active = segments.length > 0 ? segments[segments.length - 1] : "index";
       const publicRoutes = ["index", "bienvenida", "login", "crearcuenta", "forgot", "reset-password"];
 
       if (!session && !publicRoutes.includes(active)) {
-        // Redirect to welcome if signed out and on protected route
+        // Redirigir a bienvenida si no hay sesión
         router.replace("/bienvenida");
       } else if (session && (active === "login" || active === "crearcuenta" || active === "bienvenida")) {
-        // Redirect to home if signed in and on auth pages
+        // Redirigir a inicio si hay sesión
         router.replace("/home");
       }
     });
@@ -39,26 +39,26 @@ export default function RootLayout() {
   }, [segments]);
 
   useEffect(() => {
-    // Only handle Android hardware back button. iOS and web use their own navigation.
+    // Solo botón atrás de Android
     if (Platform.OS !== "android") return;
 
     const onBack = () => {
-      // Determine the active route segment (last part of the path)
+      // Determinar ruta activa
       const active = segments.length > 0 ? segments[segments.length - 1] : "index";
 
-      // If we're at the home screen, send the user to the index menu (replace so it doesn't stack)
+      // Si es home, salir de la app
       if (active === "home") {
-        // Minimize app instead of going back to login
+        // Minimizar app
         BackHandler.exitApp();
-        return true; // handled
+        return true; // manejado
       }
 
-      // If we're at the index screen, allow default behavior (let system handle exit)
-      if (active === "index") {
-        return false; // not handled here -> system will process (may exit)
+      // Si es index, comportamiento por defecto
+      if (active === "bienvenida") {
+        return false;
       }
 
-      // For other screens, navigate back (pop)
+      // Otras pantallas: volver atrás
       router.back();
       return true;
     };
@@ -68,12 +68,12 @@ export default function RootLayout() {
   }, [router, segments]);
 
   return (
-    // remove on-screen back button globally; rely on system back
+    // Ocultar botón atrás globalmente
     <SafeAreaView style={{ flex: 1 }}>
       <Stack
         screenOptions={{
           headerLeft: () => null,
-          // try to hide back affordance in header (supporting versions that expose this option)
+          // Ocultar flecha atrás
           headerBackVisible: false,
           headerShown: false,
         }}

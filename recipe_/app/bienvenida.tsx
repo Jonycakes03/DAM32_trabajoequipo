@@ -49,13 +49,13 @@ export const OnboardingScreen: React.FC = () => {
         if (!isLastSlide) {
             setCurrentIndex((prev) => prev + 1);
         } else {
-            // AJUSTA ESTE NOMBRE AL DE TU RUTA DE LOGIN / HOME
+            // Ajustar nombre de ruta
             navigation.navigate("login");
         }
     };
 
     const handleSkip = () => {
-        // Si el usuario quiere saltarse el onboarding
+        // Si el usuario salta la introducción
         navigation.navigate("login");
     };
 
@@ -67,13 +67,13 @@ export const OnboardingScreen: React.FC = () => {
                 {/* Logo / Nombre app */}
                 <Text style={styles.logo}>CLEARLABEL ✓</Text>
 
-                {/* Contenido del slide */}
+                {/* Contenido */}
                 <View style={styles.card}>
                     <Text style={styles.title}>{slide.title}</Text>
                     <Text style={styles.description}>{slide.description}</Text>
                 </View>
 
-                {/* Indicadores de páginas */}
+                {/* Indicadores */}
                 <View style={styles.dotsContainer}>
                     {SLIDES.map((_, index) => (
                         <View
@@ -86,14 +86,14 @@ export const OnboardingScreen: React.FC = () => {
                     ))}
                 </View>
 
-                {/* Botones inferiores */}
+                {/* Botones */}
                 <View style={styles.buttonsRow}>
                     {!isLastSlide ? (
                         <TouchableOpacity onPress={handleSkip}>
                             <Text style={styles.skipText}>Omitir</Text>
                         </TouchableOpacity>
                     ) : (
-                        <View style={{ width: 60 }} /> // espacio vacío para alinear
+                        <View style={{ width: 60 }} /> // Espacio para alinear
                     )}
 
                     <TouchableOpacity style={styles.primaryButton} onPress={handleNext}>

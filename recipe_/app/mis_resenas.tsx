@@ -50,7 +50,7 @@ export default function UserReviewsScreen() {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
+            {/* Encabezado */}
             <View style={styles.headerRow}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
                     <Ionicons name="chevron-back" size={22} color="#111" />

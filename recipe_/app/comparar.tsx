@@ -38,7 +38,7 @@ export default function CompareProductsScreen() {
     const [product1, setProduct1] = useState<Product | null>(null);
     const [product2, setProduct2] = useState<Product | null>(null);
 
-    // Search Modal State
+    // Estado del modal de búsqueda
     const [modalVisible, setModalVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<Product[]>([]);
@@ -98,7 +98,7 @@ export default function CompareProductsScreen() {
                     Selecciona dos productos para comparar sus características.
                 </Text>
 
-                {/* Selection Area */}
+                {/* Área de selección */}
                 <View style={styles.selectionRow}>
                     <ProductSlot
                         product={product1}
@@ -115,7 +115,7 @@ export default function CompareProductsScreen() {
                     />
                 </View>
 
-                {/* Comparison Table */}
+                {/* Tabla comparativa */}
                 {product1 && product2 ? (
                     <View style={styles.table}>
                         <Row label="Nombre" left={product1.nombre} right={product2.nombre} isHeader />
@@ -137,7 +137,7 @@ export default function CompareProductsScreen() {
                 )}
             </ScrollView>
 
-            {/* Search Modal */}
+            {/* Modal de búsqueda */}
             <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
                 <View style={styles.modalContainer}>
                     <View style={styles.modalHeader}>
