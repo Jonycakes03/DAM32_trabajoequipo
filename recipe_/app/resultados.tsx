@@ -54,12 +54,12 @@ export default function ResultsScreen() {
       .from("Productos")
       .select("id, nombre, marca, imagen, valoracion, ingredientes, informacion");
 
-    // 1. Barcode Search
+    // 1. Búsqueda por código de barras
     if (barcode) {
       setSearchTitle("Producto Escaneado");
       dbQuery = dbQuery.eq("barcode", barcode);
     }
-    // 2. Text Search
+    // 2. Búsqueda de texto
     else if (query) {
       setSearchTitle(`Resultados para "${query}"`);
       dbQuery = dbQuery.or(`nombre.ilike.%${query}%,marca.ilike.%${query}%`);
@@ -67,7 +67,7 @@ export default function ResultsScreen() {
       setSearchTitle("Todos los productos");
     }
 
-    // 3. Apply Filters
+    // 3. Aplicar filtros
     if (rating) {
       dbQuery = dbQuery.gte("valoracion", Number(rating));
     }
@@ -82,7 +82,7 @@ export default function ResultsScreen() {
       }
     }
 
-    // 4. Pagination
+    // 4. Paginación
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
     dbQuery = dbQuery.range(from, to);
@@ -185,7 +185,7 @@ export default function ResultsScreen() {
 function ProductCard({ product, highlight }: { product: Product; highlight?: boolean }) {
   return (
     <View style={[styles.card, highlight && styles.cardHighlight]}>
-      {/* Image area */}
+      {/* Área de imagen */}
       <View style={[styles.imageBox, highlight && styles.imageHighlight]}>
         {product.imagen ? (
           <Image
@@ -196,7 +196,7 @@ function ProductCard({ product, highlight }: { product: Product; highlight?: boo
         ) : null}
       </View>
 
-      {/* Valoracion badge */}
+      {/* Insignia de valoración */}
       <View style={styles.badge}>
         <Text style={styles.badgeText}>Valoración: {product.valoracion ?? "-"}</Text>
       </View>
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  /* Tab bar */
+  /* Barra inferior */
   tabbar: {
     position: "absolute",
     left: 12,
